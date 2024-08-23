@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
@@ -10,10 +10,16 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { Box, Button } from "@mui/material";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
 import classNames from "classnames/bind";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 import styles from "./ToeicForm.css";
-import { useParams } from "react-router-dom";
+import ScoreCircle from "../ScoreCircle";
+import Countdown from "../Countdown";
+import { Link, useParams } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
@@ -21,6 +27,7 @@ function ToeicForm() {
   const { id } = useParams();
   const [answers, setAnswers] = useState(Array(200).fill(""));
   const [name, setName] = useState("");
+  const [audio, setAudio] = useState("");
   const [results, setResults] = useState(Array(200).fill(""));
   const [trueAnswers, setTrueAnswers] = useState([]);
   const [listeningTrueAnswers, setListeningTrueAnswers] = useState(0);
@@ -230,6 +237,7 @@ function ToeicForm() {
     495,
     495, // 90-100
   ];
+  const audioRef = useRef(null);
 
   const getResults = async () => {
     const response = await fetch(
@@ -251,13 +259,16 @@ function ToeicForm() {
       const answersData = data.content.replace(/, |\s+/g, "");
       setTrueAnswers(answersData);
       setName(data.name);
+      setAudio(data.audio);
     };
     fetchData();
   }, [id]);
 
   const [open, setOpen] = React.useState(false);
+  const [submited, setSubmited] = React.useState(false);
   const handleOpen = () => {
     setOpen(true);
+    setSubmited(true);
   };
   const handleClose = () => {
     setOpen(false);
@@ -270,13 +281,16 @@ function ToeicForm() {
   };
 
   const handleSubmit = () => {
+    let listeningCount = 0;
+    let readingCount = 0;
+
     const newResults = answers.map((answer, index) => {
       if (answer === trueAnswers[index]) {
         // Increate listening and reading correct number
         if (index < 100) {
-          setListeningTrueAnswers((prev) => prev + 1);
+          listeningCount += 1;
         } else {
-          setReadingTrueAnswers((prev) => prev + 1);
+          readingCount += 1;
         }
         return true;
       } else {
@@ -284,6 +298,8 @@ function ToeicForm() {
       }
     });
 
+    setListeningTrueAnswers(listeningCount);
+    setReadingTrueAnswers(readingCount);
     setResults(newResults);
     handleOpen();
   };
@@ -363,22 +379,104 @@ function ToeicForm() {
     return questions;
   };
 
-  return (
-    <Container>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => {
-          alert(trueAnswers);
-        }}
-      >
-        Print Answer
-      </Button>
+  const handlePrintResult = () => {
+    const element = document.body;
 
+    html2canvas(element, { useCORS: true })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+        const imgWidth = 210; // Width of PDF (A4)
+        const pageHeight = 297; // Length of PDF (A4)
+        const imgHeight = (canvas.height * imgWidth) / canvas.width; // Image ratio
+        let heightLeft = imgHeight;
+
+        let position = 0;
+
+        // Draw each part of image in PDF
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        const listeningScore =
+          listeningScores[
+            listeningTrueAnswers - 1 >= 0 ? listeningTrueAnswers - 1 : 0
+          ];
+        const readingScore =
+          readingScores[
+            readingTrueAnswers - 1 >= 0 ? readingTrueAnswers - 1 : 0
+          ];
+        const totalScore = listeningScore + readingScore;
+        pdf.save(`${name}_${totalScore}.pdf`);
+      })
+      .catch(() => {
+        alert(
+          "This function supports only Chrome, Firefox, Safari and Edge browsers, sorry!"
+        );
+      });
+  };
+
+  return (
+    <Container style={{ marginTop: "100px" }}>
+      <AppBar>
+        <Container maxWidth="xl">
+          <Toolbar
+            sx={{
+              display: "flex",
+              justifyContent: "space-evenly",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-around",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                variant="h6"
+                noWrap
+                component="a"
+                href="/"
+                sx={{
+                  mr: 2,
+                  display: { xs: "none", md: "flex" },
+                  fontFamily: "monospace",
+                  fontWeight: 700,
+                  letterSpacing: ".3rem",
+                  color: "inherit",
+                  textDecoration: "none",
+                }}
+              >
+                HOME
+              </Typography>
+              <audio src={audio} controls ref={audioRef}></audio>
+              <Countdown onClick={handleSubmit} />
+            </Box>
+            <Button
+              sx={{ position: "fixed", bottom: "10%", right: "5%" }}
+              variant="contained"
+              color="primary"
+            >
+              <Link className={cx("edit-btn")} to={`/update/${id}`}>
+                Edit
+              </Link>
+            </Button>
+          </Toolbar>
+        </Container>
+      </AppBar>
       <Typography sx={{ marginBottom: "20px" }} variant="h2">
         {name}
       </Typography>
-
       <div>
         <Modal
           aria-labelledby="transition-modal-title"
@@ -481,7 +579,6 @@ function ToeicForm() {
           </Fade>
         </Modal>
       </div>
-
       <Box sx={{ display: "flex", justifyContent: "space-evenly" }}>
         <Box>
           <Typography
@@ -576,8 +673,70 @@ function ToeicForm() {
           </Typography>
           {renderQuestions(146, 200)}
         </Box>
+        <Box
+          sx={{
+            display: submited ? "flex" : "none",
+            flexDirection: "column",
+            alignItems: "center",
+            borderRadius: "15px",
+            padding: "12px",
+            backgroundColor: "#f5f5f5",
+            height: "fit-content",
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: "20px",
+              textAlign: "left",
+              fontWeight: "600",
+              marginBottom: "12px",
+            }}
+            variant="h4"
+          >
+            Result
+          </Typography>
+          <ScoreCircle
+            score={
+              listeningScores[
+                listeningTrueAnswers - 1 >= 0 ? listeningTrueAnswers - 1 : 0
+              ] +
+              readingScores[
+                readingTrueAnswers - 1 >= 0 ? readingTrueAnswers - 1 : 0
+              ]
+            }
+          />
+          <div className={cx("result-container")}>
+            <div className={cx("result-part")}>
+              <span className={cx("result-part__title")}>
+                Listening correct
+              </span>
+              <span className={cx("result-part__right")}>
+                {listeningTrueAnswers}
+              </span>
+            </div>
+            <div className={cx("result-part")}>
+              <span className={cx("result-part__title")}>Reading correct</span>
+              <span className={cx("result-part__right")}>
+                {readingTrueAnswers}
+              </span>
+            </div>
+          </div>
+          <Button
+            sx={{ marginTop: "20px" }}
+            variant="contained"
+            color="primary"
+            onClick={handlePrintResult}
+          >
+            Print result
+          </Button>
+        </Box>
       </Box>
-      <Button variant="contained" color="primary" onClick={handleSubmit}>
+      <Button
+        sx={{ marginBottom: "20px" }}
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}
+      >
         Submit
       </Button>
     </Container>

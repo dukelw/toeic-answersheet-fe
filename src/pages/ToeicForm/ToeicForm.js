@@ -1,6 +1,10 @@
 import ToeicForm from "../../components/ToeicForm";
 function ToeicFormPage() {
-  return <ToeicForm />;
+  return (
+    <div>
+      <ToeicForm />
+    </div>
+  );
 }
 
 export default ToeicFormPage;
