@@ -7,6 +7,7 @@ import UpdateAnswer from "../pages/UpdateAnswer";
 import ToeicForm from "../pages/ToeicForm";
 import Signin from "../pages/Signin";
 import Signup from "../pages/Signup";
+import Answers from "../pages/Answers";
 
 const publicRoutes = [
   { path: config.routes.getAnswer, component: ToeicForm, layout: null },
@@ -25,6 +26,11 @@ const privateRoutes = [
     type: "admin",
     path: config.routes.updateAnswer,
     component: UpdateAnswer,
+  },
+  {
+    type: "admin",
+    path: config.routes.answers,
+    component: Answers,
   },
   // {
   //   type: "user",

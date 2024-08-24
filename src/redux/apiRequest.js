@@ -191,7 +191,7 @@ export const createAnswer = async (
       }
     );
     dispatch(createAnswerSuccess(res.data));
-    navigate("/");
+    navigate("/answers");
   } catch (error) {
     dispatch(createAnswerFailure());
   }
@@ -223,13 +223,7 @@ export const updateAnswer = async (
   }
 };
 
-export const deleteAnswer = async (
-  accessToken,
-  ID,
-  dispatch,
-  navigate,
-  axiosJWT
-) => {
+export const deleteAnswer = async (accessToken, ID, dispatch, axiosJWT) => {
   dispatch(deleteAnswerStart());
   try {
     await axiosJWT.delete(
@@ -243,7 +237,6 @@ export const deleteAnswer = async (
       }
     );
     dispatch(deleteAnswerSuccess());
-    navigate("/");
   } catch (error) {
     dispatch(deleteAnswerFailure());
   }

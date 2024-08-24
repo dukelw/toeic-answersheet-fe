@@ -303,6 +303,7 @@ function ToeicForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentUser = useSelector((state) => state.user.signin.currentUser);
+  const isAdmin = currentUser?.metadata.user.isAdmin;
   const accessToken = currentUser?.metadata.tokens.accessToken;
   const axiosJWT = createAxios(currentUser);
 
@@ -425,7 +426,8 @@ function ToeicForm() {
   };
 
   const handleDelete = async () => {
-    await deleteAnswer(accessToken, id, dispatch, navigate, axiosJWT);
+    await deleteAnswer(accessToken, id, dispatch, axiosJWT);
+    navigate("/");
   };
 
   return (
@@ -468,24 +470,32 @@ function ToeicForm() {
               <audio src={audio} controls ref={audioRef}></audio>
               <Countdown onClick={handleSubmit} />
             </Box>
-            <Button
-              sx={{ position: "fixed", bottom: "12%", right: "5%" }}
-              variant="contained"
-              color="primary"
-            >
-              <Link className={cx("edit-btn")} to={`/update/${id}`}>
-                <EditIcon />
-              </Link>
-            </Button>
-            <Button
-              sx={{ position: "fixed", bottom: "4%", right: "5%" }}
-              variant="contained"
-              color="primary"
-            >
-              <Link className={cx("edit-btn")}>
-                <ConfirmDelete onDelete={handleDelete} />
-              </Link>
-            </Button>
+            {isAdmin ? (
+              <Button
+                sx={{ position: "fixed", bottom: "12%", right: "5%" }}
+                variant="contained"
+                color="primary"
+              >
+                <Link className={cx("edit-btn")} to={`/update/${id}`}>
+                  <EditIcon />
+                </Link>
+              </Button>
+            ) : (
+              ""
+            )}
+            {isAdmin ? (
+              <Button
+                sx={{ position: "fixed", bottom: "4%", right: "5%" }}
+                variant="contained"
+                color="primary"
+              >
+                <Link className={cx("edit-btn")}>
+                  <ConfirmDelete onDelete={handleDelete} />
+                </Link>
+              </Button>
+            ) : (
+              ""
+            )}
           </Toolbar>
         </Container>
       </AppBar>

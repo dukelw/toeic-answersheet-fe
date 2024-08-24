@@ -4,6 +4,7 @@ const routes = {
   addAnswer: "/add",
   signup: "/signup",
   signin: "/signin",
+  answers: "/answers",
   home: "/",
 };
 

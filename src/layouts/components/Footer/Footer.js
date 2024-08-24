@@ -24,7 +24,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 function Footer() {
   return (
-    <AppBar position="static">
+    <AppBar sx={{ marginTop: "60px" }} position="static">
       <Box sx={{ bgcolor: "#1976d2", pt: 5, pb: 3 }}>
         <Container>
           <Grid container spacing={2}>

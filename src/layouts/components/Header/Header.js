@@ -34,7 +34,11 @@ function Header() {
   const handleLogout = () => {
     logout(accessToken, userID, dispatch, navigate, axiosJWT);
   };
-  const pages = ["Products", "Pricing", "Blog"];
+  const pages = [
+    { title: "Guide", href: "", admin: false },
+    { title: "History", href: "", admin: false },
+    { title: "Tests", href: "/answers", admin: true },
+  ];
   const settings = [
     { title: "Profile", href: "" },
     { title: "Account", href: "" },
@@ -121,11 +125,37 @@ function Header() {
                 display: { xs: "block", md: "none" },
               }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
+              {pages.map((page) => {
+                if (page.admin) {
+                  if (isAdmin) {
+                    return (
+                      <MenuItem key={page.title} onClick={handleCloseNavMenu}>
+                        <Typography textAlign="center">
+                          <Link
+                            to={page.href}
+                            style={{ textDecoration: "none", color: "inherit" }}
+                          >
+                            {page.title}
+                          </Link>
+                        </Typography>
+                      </MenuItem>
+                    );
+                  }
+                } else {
+                  return (
+                    <MenuItem key={page.title} onClick={handleCloseNavMenu}>
+                      <Typography textAlign="center">
+                        <Link
+                          to={page.href}
+                          style={{ textDecoration: "none", color: "inherit" }}
+                        >
+                          {page.title}
+                        </Link>
+                      </Typography>
+                    </MenuItem>
+                  );
+                }
+              })}
             </Menu>
           </Box>
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
@@ -133,7 +163,7 @@ function Header() {
             variant="h5"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -148,15 +178,41 @@ function Header() {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
-            ))}
+            {pages.map((page) => {
+              if (page.admin) {
+                if (isAdmin) {
+                  return (
+                    <Button
+                      key={page.title}
+                      onClick={handleCloseNavMenu}
+                      sx={{ my: 2, color: "white", display: "block" }}
+                    >
+                      <Link
+                        to={page.href}
+                        style={{ textDecoration: "none", color: "inherit" }}
+                      >
+                        {page.title}
+                      </Link>
+                    </Button>
+                  );
+                }
+              } else {
+                return (
+                  <Button
+                    key={page.title}
+                    onClick={handleCloseNavMenu}
+                    sx={{ my: 2, color: "white", display: "block" }}
+                  >
+                    <Link
+                      to={page.href}
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      {page.title}
+                    </Link>
+                  </Button>
+                );
+              }
+            })}
           </Box>
 
           {isAdmin ? (
