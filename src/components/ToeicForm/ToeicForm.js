@@ -499,9 +499,7 @@ function ToeicForm() {
           </Toolbar>
         </Container>
       </AppBar>
-      <Typography sx={{ marginBottom: "20px" }} variant="h2">
-        {name}
-      </Typography>
+      <h1>{name}</h1>
       <div>
         <Modal
           aria-labelledby="transition-modal-title"

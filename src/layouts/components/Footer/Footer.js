@@ -24,9 +24,18 @@ const Item = styled(Paper)(({ theme }) => ({
 
 function Footer() {
   return (
-    <AppBar sx={{ marginTop: "60px" }} position="static">
+    <AppBar
+      sx={{
+        position: "static",
+        bottom: 0,
+        left: 0,
+        width: "100%",
+        top: "auto",
+        marginTop: "40px",
+      }}
+    >
       <Box sx={{ bgcolor: "#1976d2", pt: 5, pb: 3 }}>
-        <Container>
+        <Container maxWidth="lg">
           <Grid container spacing={2}>
             <Grid xs={12} md={5} lg={4}>
               <Item>
@@ -50,7 +59,7 @@ function Footer() {
                   >
                     <Link className={cx("link")}>User guide</Link>
                     <Link className={cx("link")}>Tips and tricks</Link>
-                    <Link className={cx("link")}>Test fornat</Link>
+                    <Link className={cx("link")}>Test format</Link>
                   </Box>
                 </Item>
               </Grid>

@@ -8,12 +8,18 @@ import ToeicForm from "../pages/ToeicForm";
 import Signin from "../pages/Signin";
 import Signup from "../pages/Signup";
 import Answers from "../pages/Answers";
+import Ranking from "../pages/Ranking";
+import RankingDetail from "../pages/RankingDetail";
+import History from "../pages/History";
 
 const publicRoutes = [
   { path: config.routes.getAnswer, component: ToeicForm, layout: null },
   { path: config.routes.signin, component: Signin, layout: null },
   { path: config.routes.signup, component: Signup, layout: null },
   { path: config.routes.home, component: HomePage },
+  { path: config.routes.ranking, component: Ranking },
+  { path: config.routes.rankingDetail, component: RankingDetail },
+  { path: config.routes.history, component: History },
 ];
 
 const privateRoutes = [

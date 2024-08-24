@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import userReducer from "./userSlice";
 import uploadReducer from "./uploadSlice";
 import answerReducer from "./answerSlice";
+import historyReducer from "./historySlice";
 
 import {
   persistStore,
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   upload: uploadReducer,
   answer: answerReducer,
+  history: historyReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

@@ -1,6 +1,6 @@
 :root {
   --default-layout-header-height: 68.5px;
-  --default-layout-width: 1200px;
+  --default-layout-width: 1400px;
 }
 .wrapper {
   display: flex;
@@ -10,13 +10,13 @@
 
 .container {
   margin-top: var(--default-layout-header-height);
+  min-width: var(--default-layout-width);
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
 .inner {
-  width: var(--default-layout-width);
   max-width: 100%;
   display: flex;
 }

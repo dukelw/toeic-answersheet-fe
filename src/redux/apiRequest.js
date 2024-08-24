@@ -10,6 +10,9 @@ import {
   userLogoutStart,
   userLogoutSuccess,
   userLogoutFailure,
+  findUserStart,
+  findUserSuccess,
+  findUserFailure,
 } from "./userSlice";
 import {
   uploadAudioFailure,
@@ -36,10 +39,18 @@ import {
   getAllAnswersSuccess,
   getAllAnswersFailure,
 } from "./answerSlice";
+import {
+  getHistoryFailure,
+  getHistoryStart,
+  getHistorySuccess,
+  getRankOfATestFailure,
+  getRankOfATestStart,
+  getRankOfATestSuccess,
+} from "./historySlice";
 
 const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
 
-// User
+// Start user
 export const signin = async (user, dispatch, navigate) => {
   dispatch(userSigninStart());
   try {
@@ -86,11 +97,24 @@ export const logout = async (
       }
     );
     dispatch(userLogoutSuccess());
-    navigate("signin");
+    navigate("/signin");
   } catch (error) {
     dispatch(userLogoutFailure());
   }
 };
+
+export const findUser = async (userID, dispatch) => {
+  dispatch(findUserStart());
+  try {
+    const res = await axios.get(`${REACT_APP_BASE_URL}user/find/${userID}`);
+    dispatch(findUserSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(findUserFailure());
+  }
+};
+
+// End user
 
 // Upload
 export const uploadImage = async (file, folderName, dispatch) => {
@@ -243,3 +267,44 @@ export const deleteAnswer = async (accessToken, ID, dispatch, axiosJWT) => {
 };
 
 // End answer
+
+// Start history and ranking
+
+export const getHistoryOfUser = async (userID, dispatch) => {
+  dispatch(getHistoryStart());
+  try {
+    const res = await axios.get(
+      `${REACT_APP_BASE_URL}history/get-of-user/${userID}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(res.data);
+    dispatch(getHistorySuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(getHistoryFailure());
+  }
+};
+
+export const getRankingListOfATest = async (answerID, dispatch) => {
+  dispatch(getRankOfATestStart());
+  try {
+    const res = await axios.get(
+      `${REACT_APP_BASE_URL}history/find-top-single/${answerID}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    dispatch(getRankOfATestSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(getRankOfATestFailure());
+  }
+};
+
+// End history and ranking

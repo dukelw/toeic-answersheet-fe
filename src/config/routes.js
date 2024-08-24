@@ -5,6 +5,9 @@ const routes = {
   signup: "/signup",
   signin: "/signin",
   answers: "/answers",
+  history: "/history",
+  rankingDetail: "/ranking/:id",
+  ranking: "/ranking",
   home: "/",
 };
 

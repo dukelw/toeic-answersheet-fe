@@ -36,8 +36,9 @@ function Header() {
   };
   const pages = [
     { title: "Guide", href: "", admin: false },
-    { title: "History", href: "", admin: false },
+    { title: "History", href: "/history", admin: false },
     { title: "Tests", href: "/answers", admin: true },
+    { title: "Ranking", href: "/ranking", admin: false },
   ];
   const settings = [
     { title: "Profile", href: "" },
