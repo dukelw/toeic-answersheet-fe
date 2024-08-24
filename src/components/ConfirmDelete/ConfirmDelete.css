@@ -1,0 +1,53 @@
+.status {
+  text-align: center;
+  border: none;
+  font-weight: 600;
+  padding: 4px;
+}
+
+.result-container {
+  width: fit-content;
+}
+
+.result-part {
+  height: 45px;
+  padding: 4px;
+  margin-top: 8px;
+  border-radius: 10px;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12), 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-part__title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #535353;
+}
+
+.result-part__right {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0EC122;
+  
+  margin-left: 12px;
+}
+
+.header {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #0EC122;
+  padding: 4px;
+}
+
+.edit-btn {
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}

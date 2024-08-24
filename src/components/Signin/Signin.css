@@ -4,3 +4,8 @@
   font-weight: 600;
   padding: 4px;
 }
+
+.link {
+  color: #1976d2;
+  text-decoration: none;
+}

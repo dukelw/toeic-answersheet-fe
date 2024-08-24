@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -8,6 +8,9 @@ import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import classNames from "classnames/bind";
 import styles from "./UpdateAnswer.css";
+import { updateAnswer, uploadAudio, uploadImage } from "../../redux/apiRequest";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../createAxios";
 
 const cx = classNames.bind(styles);
 
@@ -20,6 +23,11 @@ function UpdateAnswer() {
   const [sound, setSound] = useState(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const currentUser = useSelector((state) => state.user.signin.currentUser);
+  const accessToken = currentUser?.metadata.tokens.accessToken;
+  const axiosJWT = createAxios(currentUser);
   const { id } = useParams();
 
   const handleFileChange = (event) => {
@@ -33,7 +41,6 @@ function UpdateAnswer() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData();
     const answerData = {
       answer_name: name,
       answer_content: answer,
@@ -43,14 +50,7 @@ function UpdateAnswer() {
 
     if (file) {
       setIsImageLoading(true);
-      formData.append("file", file);
-      const imageData = await fetch(
-        "http://localhost:4000/api/v1/upload/answer",
-        {
-          method: "POST",
-          body: formData,
-        }
-      ).then((response) => response.json());
+      const imageData = await uploadImage(file, "", dispatch);
 
       if (imageData.img_url) {
         answerData.answer_image = imageData.img_url;
@@ -60,14 +60,7 @@ function UpdateAnswer() {
 
     if (audio) {
       setIsAudioLoading(true);
-      formData.append("audio", audio);
-      const audioData = await fetch(
-        "http://localhost:4000/api/v1/upload/answer-audio",
-        {
-          method: "POST",
-          body: formData,
-        }
-      ).then((response) => response.json());
+      const audioData = await uploadAudio(audio, dispatch);
 
       if (audioData.audio_url) {
         answerData.answer_audio = audioData.audio_url;
@@ -75,29 +68,12 @@ function UpdateAnswer() {
       setIsAudioLoading(false);
     }
 
-    try {
-      const response = await fetch(
-        "http://localhost:4000/api/v1/answer/update",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            update: answerData,
-          }),
-        }
-      );
+    const data = {
+      name,
+      update: answerData,
+    };
 
-      if (response.ok) {
-        console.log("Answer updated successfully");
-      } else {
-        console.error("Error updating answer");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    await updateAnswer(accessToken, data, dispatch, navigate, axiosJWT);
   };
 
   const getResults = async () => {
@@ -194,7 +170,6 @@ function UpdateAnswer() {
           </Button>
         </Box>
       </form>
-      <Link to="/">Go to HomePage</Link>
     </Container>
   );
 }

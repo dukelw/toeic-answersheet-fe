@@ -19,6 +19,23 @@ import {
   uploadImageStart,
   uploadImageSuccess,
 } from "./uploadSlice";
+import {
+  createAnswerStart,
+  createAnswerSuccess,
+  createAnswerFailure,
+  updateAnswerStart,
+  updateAnswerSuccess,
+  updateAnswerFailure,
+  deleteAnswerStart,
+  deleteAnswerSuccess,
+  deleteAnswerFailure,
+  getAnswerStart,
+  getAnswerSuccess,
+  getAnswerFailure,
+  getAllAnswersStart,
+  getAllAnswersSuccess,
+  getAllAnswersFailure,
+} from "./answerSlice";
 
 const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -76,13 +93,13 @@ export const logout = async (
 };
 
 // Upload
-export const uploadImage = async (file, folderName, dispatch, axiosJWT) => {
+export const uploadImage = async (file, folderName, dispatch) => {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("folderName", folderName);
   dispatch(uploadImageStart());
   try {
-    const res = await axiosJWT.post(
+    const res = await axios.post(
       `${REACT_APP_BASE_URL}upload/answer-image`,
       formData,
       {
@@ -98,12 +115,12 @@ export const uploadImage = async (file, folderName, dispatch, axiosJWT) => {
   }
 };
 
-export const uploadAudio = async (audio, dispatch, axiosJWT) => {
+export const uploadAudio = async (audio, dispatch) => {
   const formData = new FormData();
   formData.append("audio", audio);
   dispatch(uploadAudioStart());
   try {
-    const res = await axiosJWT.post(
+    const res = await axios.post(
       `${REACT_APP_BASE_URL}upload/answer-audio`,
       formData,
       {
@@ -118,3 +135,118 @@ export const uploadAudio = async (audio, dispatch, axiosJWT) => {
     dispatch(uploadAudioFailure());
   }
 };
+
+// End upload
+
+// Start answer
+
+export const getAnswer = async (ID, dispatch) => {
+  dispatch(getAnswerStart());
+  try {
+    const res = await axios.get(`${REACT_APP_BASE_URL}answer/find/${ID}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(getAnswerSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching answer:", error);
+    dispatch(getAnswerFailure());
+  }
+};
+
+export const getAllAnswers = async (dispatch) => {
+  dispatch(getAllAnswersStart());
+  try {
+    const res = await axios.get(`${REACT_APP_BASE_URL}answer`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(getAllAnswersSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(getAllAnswersFailure());
+  }
+};
+
+export const createAnswer = async (
+  accessToken,
+  answer,
+  dispatch,
+  navigate,
+  axiosJWT
+) => {
+  dispatch(createAnswerStart());
+  try {
+    const res = await axiosJWT.post(
+      `${REACT_APP_BASE_URL}answer/create`,
+      answer,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(createAnswerSuccess(res.data));
+    navigate("/");
+  } catch (error) {
+    dispatch(createAnswerFailure());
+  }
+};
+
+export const updateAnswer = async (
+  accessToken,
+  answer,
+  dispatch,
+  navigate,
+  axiosJWT
+) => {
+  dispatch(updateAnswerStart());
+  try {
+    const res = await axiosJWT.post(
+      `${REACT_APP_BASE_URL}answer/update`,
+      answer,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(updateAnswerSuccess(res.data));
+    navigate("/");
+  } catch (error) {
+    dispatch(updateAnswerFailure());
+  }
+};
+
+export const deleteAnswer = async (
+  accessToken,
+  ID,
+  dispatch,
+  navigate,
+  axiosJWT
+) => {
+  dispatch(deleteAnswerStart());
+  try {
+    await axiosJWT.delete(
+      `${REACT_APP_BASE_URL}answer/${ID}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(deleteAnswerSuccess());
+    navigate("/");
+  } catch (error) {
+    dispatch(deleteAnswerFailure());
+  }
+};
+
+// End answer

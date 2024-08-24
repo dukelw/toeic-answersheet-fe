@@ -1,22 +1,87 @@
 import { Routes, Route } from "react-router-dom";
-import HomePage from "../src/pages/HomePage";
-import ToeicForm from "../src/pages/ToeicForm";
-import CreateAnswer from "./pages/CreateAnswer";
-import UpdateAnswer from "./pages/UpdateAnswer";
-import Signup from "./pages/Signup";
-import Signin from "./pages/Signin";
+import { Fragment } from "react";
+import { publicRoutes, privateRoutes } from "../src/routes";
 import "./App.css";
+import { useSelector } from "react-redux";
+
+import DefaultLayout from "./layouts/DefaultLayout/DefaultLayout";
 
 function App() {
+  const currentUser = useSelector((state) => state.user.signin.currentUser);
+  const isAdmin = currentUser?.metadata.user.isAdmin;
+
   return (
     <div className="App">
       <Routes>
-        <Route path="/update/:id" element={<UpdateAnswer />}></Route>
-        <Route path="/signup" element={<Signup />}></Route>
-        <Route path="/signin" element={<Signin />}></Route>
-        <Route path="/answersheet/:id" element={<ToeicForm />}></Route>
-        <Route path="/add" element={<CreateAnswer />} />
-        <Route path="/" element={<HomePage />} />
+        {publicRoutes.map((route, index) => {
+          const Page = route.component;
+          let Layout = DefaultLayout;
+          if (route.layout) {
+            Layout = route.layout;
+          } else if (route.layout === null) {
+            Layout = Fragment;
+          }
+          return (
+            <Route
+              key={index}
+              path={route.path}
+              element={
+                <Layout>
+                  <Page />
+                </Layout>
+              }
+            />
+          );
+        })}
+        {currentUser &&
+          isAdmin &&
+          privateRoutes.map((route, index) => {
+            if (route.type === "admin") {
+              const Page = route.component;
+              let Layout = DefaultLayout;
+              if (route.layout) {
+                Layout = route.layout;
+              } else if (route.layout === null) {
+                Layout = Fragment;
+              }
+              return (
+                <Route
+                  key={index}
+                  path={route.path}
+                  element={
+                    <Layout>
+                      <Page />
+                    </Layout>
+                  }
+                />
+              );
+            }
+          })}
+        {currentUser &&
+          !isAdmin &&
+          privateRoutes.map((route, index) => {
+            if (route.type === "user") {
+              const Page = route.component;
+              // let Layout = DefaultLayout;
+              let Layout = Fragment;
+              if (route.layout) {
+                Layout = route.layout;
+              } else if (route.layout === null) {
+                Layout = Fragment;
+              }
+              return (
+                <Route
+                  key={index}
+                  path={route.path}
+                  element={
+                    <Layout>
+                      <Page />
+                    </Layout>
+                  }
+                />
+              );
+            }
+          })}
       </Routes>
     </div>
   );

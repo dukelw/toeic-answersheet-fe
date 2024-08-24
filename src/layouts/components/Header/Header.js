@@ -12,17 +12,19 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
+import AddIcon from "@mui/icons-material/Add";
 import LoginIcon from "@mui/icons-material/Login";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { createAxios } from "../../createAxios";
-import { logout } from "../../redux/apiRequest";
+import { createAxios } from "../../../createAxios";
+import { logout } from "../../../redux/apiRequest";
 
 function Header() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const currentUser = useSelector((state) => state.user.signin.currentUser);
+  const isAdmin = currentUser?.metadata.user.isAdmin;
   const accessToken = currentUser?.metadata.tokens.accessToken;
   const userID = currentUser?.metadata.user._id;
   const dispatch = useDispatch();
@@ -76,7 +78,7 @@ function Header() {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -157,6 +159,25 @@ function Header() {
             ))}
           </Box>
 
+          {isAdmin ? (
+            <Link to="/add">
+              <Box sx={{ flexGrow: 0 }}>
+                <Tooltip title="Create new test">
+                  <IconButton sx={{ p: 0 }}>
+                    <AddIcon
+                      sx={{
+                        color: "#fff",
+                        fontSize: "32px",
+                        marginRight: "12px",
+                      }}
+                    />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Link>
+          ) : (
+            ""
+          )}
           {!currentUser ? (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">

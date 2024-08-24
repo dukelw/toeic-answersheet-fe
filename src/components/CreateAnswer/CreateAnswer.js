@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -8,6 +8,9 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import classNames from "classnames/bind";
 import styles from "./CreateAnswer.css";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../createAxios";
+import { createAnswer, uploadAudio, uploadImage } from "../../redux/apiRequest";
 
 const cx = classNames.bind(styles);
 
@@ -18,6 +21,11 @@ function CreateAnswer() {
   const [audio, setAudio] = useState(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const currentUser = useSelector((state) => state.user.signin.currentUser);
+  const accessToken = currentUser?.metadata.tokens.accessToken;
+  const axiosJWT = createAxios(currentUser);
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -38,16 +46,8 @@ function CreateAnswer() {
     };
 
     if (file) {
-      const imageFormData = new FormData();
       setIsImageLoading(true);
-      imageFormData.append("file", file);
-      const imageData = await fetch(
-        "http://localhost:4000/api/v1/upload/answer",
-        {
-          method: "POST",
-          body: imageFormData,
-        }
-      ).then((response) => response.json());
+      const imageData = await uploadImage(file, "", dispatch);
 
       if (imageData.img_url) {
         answerData.image = imageData.img_url;
@@ -56,16 +56,8 @@ function CreateAnswer() {
     }
 
     if (audio) {
-      const audioFormData = new FormData();
       setIsAudioLoading(true);
-      audioFormData.append("audio", audio);
-      const audioData = await fetch(
-        "http://localhost:4000/api/v1/upload/answer-audio",
-        {
-          method: "POST",
-          body: audioFormData,
-        }
-      ).then((response) => response.json());
+      const audioData = await uploadAudio(audio, dispatch);
 
       if (audioData.audio_url) {
         answerData.audio = audioData.audio_url;
@@ -73,33 +65,12 @@ function CreateAnswer() {
       setIsAudioLoading(false);
     }
 
-    try {
-      const response = await fetch(
-        "http://localhost:4000/api/v1/answer/create",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(answerData),
-        }
-      );
-
-      if (response.ok) {
-        console.log("Answer created successfully");
-      } else {
-        console.error("Error creating answer");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    await createAnswer(accessToken, answerData, dispatch, navigate, axiosJWT);
   };
 
   return (
     <Container>
-      <Typography variant="h4" component="h1" gutterBottom>
-        CREATE ANSWER
-      </Typography>
+      <h1>CREATE ANSWER</h1>
       <form onSubmit={handleSubmit} className={cx("form")}>
         <Box mb={2}>
           <TextField
@@ -153,7 +124,6 @@ function CreateAnswer() {
           </Button>
         </Box>
       </form>
-      <Link to="/">Go to HomePage</Link>
     </Container>
   );
 }

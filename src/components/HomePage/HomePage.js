@@ -1,27 +1,17 @@
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import classNames from "classnames/bind";
-import styles from "./HomePage.css";
-
-const cx = classNames.bind(styles);
+import { getAllAnswers } from "../../redux/apiRequest";
+import { useDispatch } from "react-redux";
 
 function HomePage() {
   const [content, setContent] = useState([]);
+  const dispatch = useDispatch();
 
   const getContent = async () => {
-    const response = await fetch("http://localhost:4000/api/v1/answer", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
+    const data = await getAllAnswers(dispatch);
     return data;
   };
 
@@ -63,11 +53,6 @@ function HomePage() {
           <Typography>No test available</Typography>
         )}
       </Container>
-      <Link to="/add">
-        <Button sx={{ marginTop: "20px" }} variant="contained" color="primary">
-          Add new test
-        </Button>
-      </Link>
     </Container>
   );
 }

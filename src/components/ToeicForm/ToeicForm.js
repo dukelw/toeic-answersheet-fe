@@ -15,11 +15,16 @@ import Toolbar from "@mui/material/Toolbar";
 import classNames from "classnames/bind";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import EditIcon from "@mui/icons-material/Edit";
+import ConfirmDelete from "../ConfirmDelete";
 
 import styles from "./ToeicForm.css";
 import ScoreCircle from "../ScoreCircle";
 import Countdown from "../Countdown";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { createAxios } from "../../createAxios";
+import { deleteAnswer, getAnswer } from "../../redux/apiRequest";
 
 const cx = classNames.bind(styles);
 
@@ -240,17 +245,8 @@ function ToeicForm() {
   const audioRef = useRef(null);
 
   const getResults = async () => {
-    const response = await fetch(
-      `http://localhost:4000/api/v1/answer/find/${id}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const data = await response.json();
-    return data;
+    const response = await getAnswer(id, dispatch);
+    return response;
   };
 
   useEffect(() => {
@@ -303,6 +299,12 @@ function ToeicForm() {
     setResults(newResults);
     handleOpen();
   };
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const currentUser = useSelector((state) => state.user.signin.currentUser);
+  const accessToken = currentUser?.metadata.tokens.accessToken;
+  const axiosJWT = createAxios(currentUser);
 
   const style = {
     position: "absolute",
@@ -422,6 +424,10 @@ function ToeicForm() {
       });
   };
 
+  const handleDelete = async () => {
+    await deleteAnswer(accessToken, id, dispatch, navigate, axiosJWT);
+  };
+
   return (
     <Container style={{ marginTop: "100px" }}>
       <AppBar>
@@ -463,12 +469,21 @@ function ToeicForm() {
               <Countdown onClick={handleSubmit} />
             </Box>
             <Button
-              sx={{ position: "fixed", bottom: "10%", right: "5%" }}
+              sx={{ position: "fixed", bottom: "12%", right: "5%" }}
               variant="contained"
               color="primary"
             >
               <Link className={cx("edit-btn")} to={`/update/${id}`}>
-                Edit
+                <EditIcon />
+              </Link>
+            </Button>
+            <Button
+              sx={{ position: "fixed", bottom: "4%", right: "5%" }}
+              variant="contained"
+              color="primary"
+            >
+              <Link className={cx("edit-btn")}>
+                <ConfirmDelete onDelete={handleDelete} />
               </Link>
             </Button>
           </Toolbar>
