@@ -13,6 +13,12 @@ import {
   findUserStart,
   findUserSuccess,
   findUserFailure,
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+  changePasswordStart,
+  changePasswordSuccess,
+  changePasswordFailure,
 } from "./userSlice";
 import {
   uploadAudioFailure,
@@ -40,6 +46,12 @@ import {
   getAllAnswersFailure,
 } from "./answerSlice";
 import {
+  createHistoryFailure,
+  createHistoryStart,
+  createHistorySuccess,
+  getHighestFailure,
+  getHighestStart,
+  getHighestSuccess,
   getHistoryFailure,
   getHistoryStart,
   getHistorySuccess,
@@ -61,6 +73,7 @@ export const signin = async (user, dispatch, navigate) => {
     navigate("/");
   } catch (error) {
     dispatch(userSigninFailure());
+    return false;
   }
 };
 
@@ -71,9 +84,10 @@ export const signup = async (user, dispatch, navigate) => {
     const refreshToken = res.data?.metadata?.metadata?.tokens?.refreshToken;
     localStorage.setItem("refreshToken", refreshToken);
     dispatch(userSignupSuccess());
-    navigate("/");
+    navigate("/signin");
   } catch (error) {
     dispatch(userSignupFailure());
+    return false;
   }
 };
 
@@ -88,7 +102,7 @@ export const logout = async (
   try {
     await axiosJWT.post(
       `${REACT_APP_BASE_URL}user/logout`,
-      {}, // Dữ liệu gửi đi rỗng trong trường hợp này
+      {},
       {
         headers: {
           authorization: accessToken,
@@ -100,6 +114,58 @@ export const logout = async (
     navigate("/signin");
   } catch (error) {
     dispatch(userLogoutFailure());
+  }
+};
+
+export const updateUser = async (
+  accessToken,
+  userID,
+  data,
+  dispatch,
+  axiosJWT
+) => {
+  dispatch(updateUserStart());
+  try {
+    const result = await axiosJWT.post(
+      `${REACT_APP_BASE_URL}user/update`,
+      data,
+      {
+        headers: {
+          authorization: accessToken,
+          user: userID,
+        },
+      }
+    );
+    dispatch(updateUserSuccess());
+    return result;
+  } catch (error) {
+    dispatch(updateUserFailure());
+  }
+};
+
+export const changePassword = async (
+  accessToken,
+  userID,
+  data,
+  dispatch,
+  axiosJWT
+) => {
+  dispatch(changePasswordStart());
+  try {
+    const res = await axiosJWT.post(
+      `${REACT_APP_BASE_URL}user/change-password`,
+      data,
+      {
+        headers: {
+          authorization: accessToken,
+          user: userID,
+        },
+      }
+    );
+    dispatch(changePasswordSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(changePasswordFailure());
   }
 };
 
@@ -270,6 +336,21 @@ export const deleteAnswer = async (accessToken, ID, dispatch, axiosJWT) => {
 
 // Start history and ranking
 
+export const createHistory = async (accessToken, data, dispatch, axiosJWT) => {
+  dispatch(createHistoryStart());
+  try {
+    const res = await axiosJWT.post(`${REACT_APP_BASE_URL}history`, data, {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `${accessToken}`,
+      },
+    });
+    dispatch(createHistorySuccess(res.data));
+  } catch (error) {
+    dispatch(createHistoryFailure());
+  }
+};
+
 export const getHistoryOfUser = async (userID, dispatch) => {
   dispatch(getHistoryStart());
   try {
@@ -281,11 +362,28 @@ export const getHistoryOfUser = async (userID, dispatch) => {
         },
       }
     );
-    console.log(res.data);
     dispatch(getHistorySuccess(res.data));
     return res.data;
   } catch (error) {
     dispatch(getHistoryFailure());
+  }
+};
+
+export const getHighestOfUser = async (userID, dispatch) => {
+  dispatch(getHighestStart());
+  try {
+    const res = await axios.get(
+      `${REACT_APP_BASE_URL}history/highest/${userID}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    dispatch(getHighestSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(getHighestFailure());
   }
 };
 

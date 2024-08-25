@@ -10,6 +10,8 @@ import {
   TableRow,
   Paper,
   IconButton,
+  useMediaQuery,
+  createTheme,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { deleteAnswer, getAllAnswers } from "../../redux/apiRequest";
@@ -47,10 +49,18 @@ function Answers() {
     window.location.reload();
   };
 
+  const theme = createTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Container>
+    <Container
+      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+    >
       <h1>All answers</h1>
-      <TableContainer component={Paper} sx={{ mt: 3 }}>
+      <TableContainer
+        component={Paper}
+        sx={{ mt: 3, width: isMobile ? "30%" : "100%" }}
+      >
         <Table>
           <TableHead>
             <TableRow sx={{ backgroundColor: "#1976d2" }}>
@@ -89,7 +99,6 @@ function Answers() {
                   </Link>
                 </TableCell>
                 <TableCell>
-                  {" "}
                   <Link className={cx("link")} to={`/answersheet/${row._id}`}>
                     {row.answer_content}
                   </Link>

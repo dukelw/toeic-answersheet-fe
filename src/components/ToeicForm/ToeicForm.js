@@ -8,8 +8,19 @@ import Fade from "@mui/material/Fade";
 import Backdrop from "@mui/material/Backdrop";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
+import LoginIcon from "@mui/icons-material/Login";
 import Modal from "@mui/material/Modal";
-import { Box, Button } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  createTheme,
+  IconButton,
+  Menu,
+  MenuItem,
+  Tooltip,
+  useMediaQuery,
+} from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import classNames from "classnames/bind";
@@ -24,11 +35,18 @@ import Countdown from "../Countdown";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createAxios } from "../../createAxios";
-import { deleteAnswer, getAnswer } from "../../redux/apiRequest";
+import {
+  createHistory,
+  deleteAnswer,
+  getAnswer,
+  logout,
+} from "../../redux/apiRequest";
 
 const cx = classNames.bind(styles);
 
 function ToeicForm() {
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const { id } = useParams();
   const [answers, setAnswers] = useState(Array(200).fill(""));
   const [name, setName] = useState("");
@@ -244,6 +262,37 @@ function ToeicForm() {
   ];
   const audioRef = useRef(null);
 
+  const handleLogout = () => {
+    logout(accessToken, userID, dispatch, navigate, axiosJWT);
+  };
+
+  const settings = [
+    { title: "Profile", href: "" },
+    { title: "Account", href: "" },
+    { title: "Dashboard", href: "" },
+    { title: "Logout", href: "", onClick: handleLogout },
+  ];
+  const sessions = [
+    { title: "Sign in", href: "/signin" },
+    { title: "Sign up", href: "/signup" },
+  ];
+
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleOpenMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
   const getResults = async () => {
     const response = await getAnswer(id, dispatch);
     return response;
@@ -294,6 +343,21 @@ function ToeicForm() {
       }
     });
 
+    if (currentUser) {
+      const listeningScore =
+        listeningScores[listeningCount - 1 >= 0 ? listeningCount - 1 : 0];
+      const readingScore =
+        readingScores[readingCount - 1 >= 0 ? readingCount - 1 : 0];
+      const totalScore = listeningScore + readingScore;
+      const data = {
+        userID,
+        answerID: id,
+        score: totalScore,
+        answer: answers.join(", "),
+      };
+      createHistory(accessToken, data, dispatch, axiosJWT);
+    }
+
     setListeningTrueAnswers(listeningCount);
     setReadingTrueAnswers(readingCount);
     setResults(newResults);
@@ -304,16 +368,22 @@ function ToeicForm() {
   const navigate = useNavigate();
   const currentUser = useSelector((state) => state.user.signin.currentUser);
   const isAdmin = currentUser?.metadata.user.isAdmin;
+  const avatar = currentUser?.metadata.user.user_avatar;
+  const userID = currentUser?.metadata.user._id;
   const accessToken = currentUser?.metadata.tokens.accessToken;
   const axiosJWT = createAxios(currentUser);
+
+  const theme = createTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const style = {
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 800,
-    bgcolor: "orange",
+    width: isMobile ? 360 : 800,
+    bgcolor: "#1976d2",
+    color: "#ffffff",
     boxShadow: 24,
     p: 4,
   };
@@ -323,14 +393,23 @@ function ToeicForm() {
     for (let index = start; index < end; index++) {
       questions.push(
         <Box
-          sx={{ display: "flex", alignItems: "center", marginBottom: "16px" }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "16px",
+            justifyContent: isMobile ? "center" : "",
+          }}
           key={`question-${index}`}
         >
           <Typography
-            sx={{ marginRight: "12px", fontWeight: "400", fontSize: "16px" }}
+            sx={{
+              marginRight: "12px",
+              fontWeight: "400",
+              fontSize: "16px",
+            }}
             variant="h6"
           >
-            Question {index + 1}
+            {isMobile ? `Q${index + 1}` : `Question ${index + 1}`}
           </Typography>
           <FormControl component="fieldset">
             <RadioGroup
@@ -374,6 +453,7 @@ function ToeicForm() {
                     : "red",
               color: "white",
               userSelect: "none",
+              display: isMobile && !submited ? "none" : "block",
             }}
           />
         </Box>
@@ -431,9 +511,16 @@ function ToeicForm() {
   };
 
   return (
-    <Container style={{ marginTop: "100px" }}>
+    <Container
+      style={{
+        marginTop: "100px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
       <AppBar>
-        <Container maxWidth="xl">
+        <Container sx={{ display: "flex", justifyContent: "center" }}>
           <Toolbar
             sx={{
               display: "flex",
@@ -457,7 +544,7 @@ function ToeicForm() {
                 href="/"
                 sx={{
                   mr: 2,
-                  display: { xs: "none", md: "flex" },
+                  display: { md: "flex" },
                   fontFamily: "monospace",
                   fontWeight: 700,
                   letterSpacing: ".3rem",
@@ -467,8 +554,99 @@ function ToeicForm() {
               >
                 HOME
               </Typography>
-              <audio src={audio} controls ref={audioRef}></audio>
+              <audio
+                style={{ display: isMobile ? "none" : "block" }}
+                src={audio}
+                controls
+                ref={audioRef}
+              ></audio>
               <Countdown onClick={handleSubmit} />
+              {!currentUser ? (
+                <Box sx={{ flexGrow: 0 }}>
+                  <Tooltip title="Open options">
+                    <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
+                      <LoginIcon sx={{ fontSize: "32px" }} />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    sx={{ mt: "45px" }}
+                    id="menu-appbar"
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={Boolean(anchorEl)}
+                    onClose={handleCloseMenu}
+                  >
+                    {sessions.map((session) => (
+                      <MenuItem key={session.title} onClick={handleCloseMenu}>
+                        <Typography textAlign="center">
+                          <Link
+                            to={session.href}
+                            style={{ textDecoration: "none", color: "inherit" }}
+                          >
+                            {session.title}
+                          </Link>
+                        </Typography>
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </Box>
+              ) : (
+                <Box sx={{ flexGrow: 0 }}>
+                  <Tooltip title="Open settings">
+                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                      <Avatar
+                        alt="Remy Sharp"
+                        src={
+                          avatar
+                            ? avatar
+                            : "https://i.pinimg.com/736x/49/c6/f1/49c6f19b6c8033d8a83e899d11719f07.jpg"
+                        }
+                      />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    sx={{ mt: "45px" }}
+                    id="menu-appbar"
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                  >
+                    {settings.map((setting) => (
+                      <MenuItem
+                        key={setting.title}
+                        onClick={handleCloseUserMenu}
+                      >
+                        <Typography textAlign="center">
+                          <Link
+                            to={setting.href}
+                            style={{ textDecoration: "none", color: "inherit" }}
+                            onClick={setting.onClick}
+                          >
+                            {setting.title}
+                          </Link>
+                        </Typography>
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </Box>
+              )}
             </Box>
             {isAdmin ? (
               <Button
@@ -499,6 +677,12 @@ function ToeicForm() {
           </Toolbar>
         </Container>
       </AppBar>
+      <audio
+        style={{ display: isMobile ? "block" : "none" }}
+        src={audio}
+        controls
+        ref={audioRef}
+      ></audio>
       <h1>{name}</h1>
       <div>
         <Modal
@@ -536,31 +720,37 @@ function ToeicForm() {
                   sx={{
                     mt: 0,
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    flexDirection: isMobile ? "column" : "row",
+                    justifyContent: isMobile ? "center" : "space-between",
+                    alignItems: isMobile ? "left" : "center",
                   }}
                 >
                   <div>
                     The number of correct in Listening Part:{" "}
-                    <Button>{listeningTrueAnswers}</Button>
+                    <Button sx={{ color: "#ffffff" }}>
+                      {listeningTrueAnswers}
+                    </Button>
                   </div>
                   <div>
                     The number of correct in Listening Part:{" "}
-                    <Button>{readingTrueAnswers}</Button>
+                    <Button sx={{ color: "#ffffff" }}>
+                      {readingTrueAnswers}
+                    </Button>
                   </div>
                 </Typography>
                 <Typography
                   sx={{
                     mt: 2,
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    flexDirection: isMobile ? "column" : "row",
+                    justifyContent: isMobile ? "center" : "space-between",
+                    alignItems: isMobile ? "left" : "center",
                     marginTop: "0",
                   }}
                 >
                   <div>
                     TOEIC Listening score:{" "}
-                    <Button>
+                    <Button sx={{ color: "#ffffff" }}>
                       {
                         listeningScores[
                           listeningTrueAnswers - 1 >= 0
@@ -572,7 +762,7 @@ function ToeicForm() {
                   </div>
                   <div>
                     TOEIC Reading score:{" "}
-                    <Button>
+                    <Button sx={{ color: "#ffffff" }}>
                       {
                         readingScores[
                           readingTrueAnswers - 1 >= 0
@@ -585,7 +775,7 @@ function ToeicForm() {
                 </Typography>
                 <Typography sx={{ marginTop: "0" }}>
                   Total:{" "}
-                  <Button>
+                  <Button sx={{ color: "#ffffff" }}>
                     {listeningScores[
                       listeningTrueAnswers - 1 >= 0
                         ? listeningTrueAnswers - 1
@@ -602,14 +792,22 @@ function ToeicForm() {
           </Fade>
         </Modal>
       </div>
-      <Box sx={{ display: "flex", justifyContent: "space-evenly" }}>
-        <Box>
+      <Box
+        sx={{
+          display: isMobile ? "block" : "flex",
+        }}
+      >
+        <Box
+          sx={{
+            marginRight: isMobile ? "0" : "20px",
+          }}
+        >
           <Typography
             sx={{
               fontSize: "20px",
-              textAlign: "left",
               fontWeight: "600",
               marginBottom: "12px",
+              textAlign: isMobile ? "center" : "left",
             }}
             variant="h4"
           >
@@ -619,7 +817,7 @@ function ToeicForm() {
           <Typography
             sx={{
               fontSize: "20px",
-              textAlign: "left",
+              textAlign: isMobile ? "center" : "left",
               fontWeight: "600",
               marginBottom: "12px",
               marginTop: "4px",
@@ -632,7 +830,7 @@ function ToeicForm() {
           <Typography
             sx={{
               fontSize: "20px",
-              textAlign: "left",
+              textAlign: isMobile ? "center" : "left",
               fontWeight: "600",
               marginBottom: "12px",
               marginTop: "4px",
@@ -645,7 +843,7 @@ function ToeicForm() {
           <Typography
             sx={{
               fontSize: "20px",
-              textAlign: "left",
+              textAlign: isMobile ? "center" : "left",
               fontWeight: "600",
               marginBottom: "8px",
               marginTop: "4px",
@@ -660,7 +858,7 @@ function ToeicForm() {
           <Typography
             sx={{
               fontSize: "20px",
-              textAlign: "left",
+              textAlign: isMobile ? "center" : "left",
               fontWeight: "600",
               marginBottom: "12px",
             }}
@@ -672,7 +870,7 @@ function ToeicForm() {
           <Typography
             sx={{
               fontSize: "20px",
-              textAlign: "left",
+              textAlign: isMobile ? "center" : "left",
               fontWeight: "600",
               marginBottom: "12px",
               marginTop: "4px",
@@ -685,7 +883,7 @@ function ToeicForm() {
           <Typography
             sx={{
               fontSize: "20px",
-              textAlign: "left",
+              textAlign: isMobile ? "center" : "left",
               fontWeight: "600",
               marginBottom: "12px",
               marginTop: "4px",
@@ -699,8 +897,10 @@ function ToeicForm() {
         <Box
           sx={{
             display: submited ? "flex" : "none",
+            marginLeft: isMobile ? "0px" : "40px",
             flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
             borderRadius: "15px",
             padding: "12px",
             backgroundColor: "#f5f5f5",
@@ -710,7 +910,7 @@ function ToeicForm() {
           <Typography
             sx={{
               fontSize: "20px",
-              textAlign: "left",
+              textAlign: isMobile ? "center" : "left",
               fontWeight: "600",
               marginBottom: "12px",
             }}
@@ -755,7 +955,7 @@ function ToeicForm() {
         </Box>
       </Box>
       <Button
-        sx={{ marginBottom: "20px" }}
+        sx={{ marginBottom: "20px", marginTop: "20px" }}
         variant="contained"
         color="primary"
         onClick={handleSubmit}

@@ -9,6 +9,8 @@ import {
   TableRow,
   Paper,
   Typography,
+  createTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import {
@@ -53,16 +55,29 @@ function RankingDetail() {
     fetchData();
   }, [dispatch, id]);
 
+  const theme = createTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Container sx={{ mt: 4 }}>
+    <Container
+      sx={{
+        mt: 4,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
       {answerInfo && (
-        <Typography variant="h4" gutterBottom textAlign={"center"}>
+        <h1 style={{ width: isMobile ? "20%" : "100%" }}>
           Ranking of {answerInfo.name}
-        </Typography>
+        </h1>
       )}
 
       {rankings.length > 0 ? (
-        <TableContainer component={Paper}>
+        <TableContainer
+          sx={{ width: isMobile ? "30%" : "100%" }}
+          component={Paper}
+        >
           <Table>
             <TableHead sx={{ backgroundColor: "#1976d2" }}>
               <TableRow>

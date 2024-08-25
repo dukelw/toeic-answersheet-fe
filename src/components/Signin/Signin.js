@@ -11,6 +11,8 @@ import Cookies from "js-cookie";
 import classNames from "classnames/bind";
 import styles from "./Signin.css";
 import { signin } from "../../redux/apiRequest";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 
 const cx = classNames.bind(styles);
 
@@ -18,11 +20,20 @@ function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!email || !password) {
+      setErrorMessage("Email and password cannot be empty");
+      setOpenSnackbar(true);
+      return;
+    }
+
     const user = { email, password };
 
     if (rememberMe) {
@@ -33,16 +44,26 @@ function Signin() {
       Cookies.remove("password");
     }
 
-    signin(user, dispatch, navigate);
+    const result = await signin(user, dispatch, navigate);
+    if (result === false) {
+      setErrorMessage(
+        "Sign in failed. Please check your credentials and try again."
+      );
+      setOpenSnackbar(true); // Open snackbar if sign-in fails
+    }
   };
 
   useEffect(() => {
     const savedEmail = Cookies.get("email");
     const savedPassword = Cookies.get("password");
-    setRememberMe(savedEmail ? true : false);
-    setEmail(savedEmail);
-    setPassword(savedPassword);
+    setRememberMe(!!savedEmail);
+    setEmail(savedEmail || "");
+    setPassword(savedPassword || "");
   }, []);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   return (
     <Container>
@@ -56,6 +77,8 @@ function Signin() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            error={!email && openSnackbar}
+            helperText={!email && openSnackbar ? "Email is required" : ""}
           />
         </Box>
         <Box mb={2}>
@@ -66,6 +89,8 @@ function Signin() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            error={!password && openSnackbar}
+            helperText={!password && openSnackbar ? "Password is required" : ""}
           />
         </Box>
         <Box mb={2}>
@@ -92,6 +117,19 @@ function Signin() {
       <Link className={cx("link")} to="/">
         Go to HomePage
       </Link>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <MuiAlert
+          onClose={handleCloseSnackbar}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {errorMessage}
+        </MuiAlert>
+      </Snackbar>
     </Container>
   );
 }

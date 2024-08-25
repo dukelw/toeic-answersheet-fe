@@ -22,6 +22,15 @@ const userSlide = createSlice({
       isFetching: false,
       error: false,
     },
+    update: {
+      isFetching: false,
+      error: false,
+    },
+    password: {
+      success: null,
+      isFetching: false,
+      error: false,
+    },
   },
   reducers: {
     userSigninStart: (state) => {
@@ -73,6 +82,29 @@ const userSlide = createSlice({
       state.find.isFetching = false;
       state.find.error = true;
     },
+    updateUserStart: (state) => {
+      state.update.isFetching = true;
+    },
+    updateUserSuccess: (state) => {
+      state.update.isFetching = false;
+      state.update.error = false;
+    },
+    updateUserFailure: (state) => {
+      state.update.isFetching = false;
+      state.update.error = true;
+    },
+    changePasswordStart: (state) => {
+      state.password.isFetching = true;
+    },
+    changePasswordSuccess: (state, action) => {
+      state.password.success = action.payload;
+      state.password.isFetching = false;
+      state.password.error = false;
+    },
+    changePasswordFailure: (state) => {
+      state.password.isFetching = false;
+      state.password.error = true;
+    },
   },
 });
 
@@ -89,5 +121,11 @@ export const {
   findUserStart,
   findUserSuccess,
   findUserFailure,
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+  changePasswordStart,
+  changePasswordSuccess,
+  changePasswordFailure,
 } = userSlide.actions;
 export default userSlide.reducer;

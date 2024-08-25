@@ -13,6 +13,11 @@ const historySlide = createSlice({
       isFetching: false,
       error: false,
     },
+    getHighest: {
+      highest: null,
+      isFetching: false,
+      error: false,
+    },
     create: {
       createdHistory: null,
       isFetching: false,
@@ -51,6 +56,18 @@ const historySlide = createSlice({
     },
     getAllHistorysFailure: (state) => {
       state.getAll.isFetching = false;
+      state.getAll.error = true;
+    },
+    getHighestStart: (state) => {
+      state.getHighest.isFetching = true;
+    },
+    getHighestSuccess: (state, action) => {
+      state.getHighest.isFetching = false;
+      state.getHighest.highest = action.payload;
+      state.getHighest.error = false;
+    },
+    getHighestFailure: (state) => {
+      state.getHighest.isFetching = false;
       state.getAll.error = true;
     },
     createHistoryStart: (state) => {
@@ -110,6 +127,9 @@ export const {
   getAllHistorysStart,
   getAllHistorysSuccess,
   getAllHistorysFailure,
+  getHighestStart,
+  getHighestSuccess,
+  getHighestFailure,
   createHistoryStart,
   createHistorySuccess,
   createHistoryFailure,

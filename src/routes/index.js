@@ -11,6 +11,8 @@ import Answers from "../pages/Answers";
 import Ranking from "../pages/Ranking";
 import RankingDetail from "../pages/RankingDetail";
 import History from "../pages/History";
+import Profile from "../pages/Profile";
+import Account from "../pages/Account";
 
 const publicRoutes = [
   { path: config.routes.getAnswer, component: ToeicForm, layout: null },
@@ -38,12 +40,26 @@ const privateRoutes = [
     path: config.routes.answers,
     component: Answers,
   },
-  // {
-  //   type: "user",
-  //   path: config.routes.payment,
-  //   component: Payment,
-  //   layout: HeaderNoLogo,
-  // },
+  {
+    type: "admin",
+    path: config.routes.profile,
+    component: Profile,
+  },
+  {
+    type: "admin",
+    path: config.routes.account,
+    component: Account,
+  },
+  {
+    type: "user",
+    path: config.routes.account,
+    component: Account,
+  },
+  {
+    type: "user",
+    path: config.routes.profile,
+    component: Profile,
+  },
 ];
 
 export { publicRoutes, privateRoutes };

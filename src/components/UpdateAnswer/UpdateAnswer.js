@@ -11,6 +11,7 @@ import styles from "./UpdateAnswer.css";
 import { updateAnswer, uploadAudio, uploadImage } from "../../redux/apiRequest";
 import { useDispatch, useSelector } from "react-redux";
 import { createAxios } from "../../createAxios";
+import { createTheme, useMediaQuery } from "@mui/material";
 
 const cx = classNames.bind(styles);
 
@@ -102,10 +103,19 @@ function UpdateAnswer() {
     fetchData();
   }, [id]);
 
+  const theme = createTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Container>
+    <Container
+      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+    >
       <h1>UPDATE ANSWER</h1>
-      <form onSubmit={handleSubmit} className={cx("form")}>
+      <form
+        style={{ width: isMobile ? "30%" : "100%" }}
+        onSubmit={handleSubmit}
+        className={cx("form")}
+      >
         <Box mb={2}>
           <TextField
             fullWidth

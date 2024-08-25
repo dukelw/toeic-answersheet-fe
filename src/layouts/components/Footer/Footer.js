@@ -107,7 +107,10 @@ function Footer() {
                 sx={{ order: { xs: 1, sm: 2 } }}
               >
                 <Grid>
-                  <Link className={cx("link")}>
+                  <Link
+                    to={"https://www.facebook.com/daydreamer.so"}
+                    className={cx("link")}
+                  >
                     <FacebookIcon />
                   </Link>
                 </Grid>

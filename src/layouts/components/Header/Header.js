@@ -21,10 +21,12 @@ import { logout } from "../../../redux/apiRequest";
 
 function Header() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElAdmin, setAnchorElAdmin] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const currentUser = useSelector((state) => state.user.signin.currentUser);
   const isAdmin = currentUser?.metadata.user.isAdmin;
+  const avatar = currentUser?.metadata.user.user_avatar;
   const accessToken = currentUser?.metadata.tokens.accessToken;
   const userID = currentUser?.metadata.user._id;
   const dispatch = useDispatch();
@@ -35,20 +37,24 @@ function Header() {
     logout(accessToken, userID, dispatch, navigate, axiosJWT);
   };
   const pages = [
-    { title: "Guide", href: "", admin: false },
+    { title: "Guide", href: "/guide", admin: false },
     { title: "History", href: "/history", admin: false },
-    { title: "Tests", href: "/answers", admin: true },
     { title: "Ranking", href: "/ranking", admin: false },
+    { title: "Document", href: "/document", admin: false },
+    { title: "Tests", href: "/answers", admin: true },
   ];
   const settings = [
-    { title: "Profile", href: "" },
-    { title: "Account", href: "" },
-    { title: "Dashboard", href: "" },
+    { title: "Profile", href: `/profile/${userID}` },
+    { title: "Account", href: `/account/${userID}` },
     { title: "Logout", href: "", onClick: handleLogout },
   ];
   const sessions = [
     { title: "Sign in", href: "/signin" },
     { title: "Sign up", href: "/signup" },
+  ];
+  const admins = [
+    { title: "Document", href: "/document/add" },
+    { title: "Test", href: "/test/add" },
   ];
 
   const handleOpenNavMenu = (event) => {
@@ -57,21 +63,24 @@ function Header() {
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
-
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+  const handleOpenAdminMenu = (event) => {
+    setAnchorElAdmin(event.currentTarget);
   };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
-
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
   const handleCloseMenu = () => {
     setAnchorEl(null);
+  };
+  const handleCloseAdminMenu = () => {
+    setAnchorElAdmin(null);
   };
 
   return (
@@ -130,30 +139,30 @@ function Header() {
                 if (page.admin) {
                   if (isAdmin) {
                     return (
-                      <MenuItem key={page.title} onClick={handleCloseNavMenu}>
-                        <Typography textAlign="center">
-                          <Link
-                            to={page.href}
-                            style={{ textDecoration: "none", color: "inherit" }}
-                          >
+                      <Link
+                        key={page.title}
+                        to={page.href}
+                        style={{ textDecoration: "none", color: "inherit" }}
+                      >
+                        <MenuItem onClick={handleCloseNavMenu}>
+                          <Typography textAlign="center">
                             {page.title}
-                          </Link>
-                        </Typography>
-                      </MenuItem>
+                          </Typography>
+                        </MenuItem>
+                      </Link>
                     );
                   }
                 } else {
                   return (
-                    <MenuItem key={page.title} onClick={handleCloseNavMenu}>
-                      <Typography textAlign="center">
-                        <Link
-                          to={page.href}
-                          style={{ textDecoration: "none", color: "inherit" }}
-                        >
-                          {page.title}
-                        </Link>
-                      </Typography>
-                    </MenuItem>
+                    <Link
+                      key={page.title}
+                      to={page.href}
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      <MenuItem onClick={handleCloseNavMenu}>
+                        <Typography textAlign="center">{page.title}</Typography>
+                      </MenuItem>
+                    </Link>
                   );
                 }
               })}
@@ -183,61 +192,87 @@ function Header() {
               if (page.admin) {
                 if (isAdmin) {
                   return (
-                    <Button
+                    <Link
                       key={page.title}
-                      onClick={handleCloseNavMenu}
-                      sx={{ my: 2, color: "white", display: "block" }}
+                      to={page.href}
+                      style={{ textDecoration: "none", color: "inherit" }}
                     >
-                      <Link
-                        to={page.href}
-                        style={{ textDecoration: "none", color: "inherit" }}
+                      <Button
+                        onClick={handleCloseNavMenu}
+                        sx={{ my: 2, color: "white", display: "block" }}
                       >
                         {page.title}
-                      </Link>
-                    </Button>
+                      </Button>
+                    </Link>
                   );
                 }
               } else {
                 return (
-                  <Button
+                  <Link
                     key={page.title}
-                    onClick={handleCloseNavMenu}
-                    sx={{ my: 2, color: "white", display: "block" }}
+                    to={page.href}
+                    style={{ textDecoration: "none", color: "inherit" }}
                   >
-                    <Link
-                      to={page.href}
-                      style={{ textDecoration: "none", color: "inherit" }}
+                    <Button
+                      onClick={handleCloseNavMenu}
+                      sx={{ my: 2, color: "white", display: "block" }}
                     >
                       {page.title}
-                    </Link>
-                  </Button>
+                    </Button>
+                  </Link>
                 );
               }
             })}
           </Box>
 
           {isAdmin ? (
-            <Link to="/add">
-              <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Create new test">
-                  <IconButton sx={{ p: 0 }}>
-                    <AddIcon
-                      sx={{
-                        color: "#fff",
-                        fontSize: "32px",
-                        marginRight: "12px",
-                      }}
-                    />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Link>
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip onClick={handleOpenAdminMenu} title="Create new test">
+                <IconButton sx={{ p: 0 }}>
+                  <AddIcon
+                    sx={{
+                      color: "#fff",
+                      fontSize: "32px",
+                      marginRight: "12px",
+                    }}
+                  />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElAdmin}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElAdmin)}
+                onClose={handleCloseAdminMenu}
+              >
+                {admins.map((admin) => (
+                  <Link
+                    key={admin.title}
+                    to={admin.href}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <MenuItem onClick={handleCloseAdminMenu}>
+                      <Typography textAlign="center">{admin.title}</Typography>
+                    </MenuItem>
+                  </Link>
+                ))}
+              </Menu>
+            </Box>
           ) : (
             ""
           )}
           {!currentUser ? (
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
+              <Tooltip title="Open options">
                 <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
                   <LoginIcon sx={{ fontSize: "32px" }} />
                 </IconButton>
@@ -259,16 +294,17 @@ function Header() {
                 onClose={handleCloseMenu}
               >
                 {sessions.map((session) => (
-                  <MenuItem key={session.title} onClick={handleCloseMenu}>
-                    <Typography textAlign="center">
-                      <Link
-                        to={session.href}
-                        style={{ textDecoration: "none", color: "inherit" }}
-                      >
+                  <Link
+                    key={session.title}
+                    to={session.href}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <MenuItem onClick={handleCloseMenu}>
+                      <Typography textAlign="center">
                         {session.title}
-                      </Link>
-                    </Typography>
-                  </MenuItem>
+                      </Typography>
+                    </MenuItem>
+                  </Link>
                 ))}
               </Menu>
             </Box>
@@ -278,7 +314,11 @@ function Header() {
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar
                     alt="Remy Sharp"
-                    src="https://i.pinimg.com/736x/49/c6/f1/49c6f19b6c8033d8a83e899d11719f07.jpg"
+                    src={
+                      avatar
+                        ? avatar
+                        : "https://i.pinimg.com/736x/49/c6/f1/49c6f19b6c8033d8a83e899d11719f07.jpg"
+                    }
                   />
                 </IconButton>
               </Tooltip>
@@ -299,17 +339,18 @@ function Header() {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting.title} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">
-                      <Link
-                        to={setting.href}
-                        style={{ textDecoration: "none", color: "inherit" }}
-                        onClick={setting.onClick}
-                      >
+                  <Link
+                    key={setting.title}
+                    to={setting.href}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                    onClick={setting.onClick}
+                  >
+                    <MenuItem onClick={handleCloseUserMenu}>
+                      <Typography textAlign="center">
                         {setting.title}
-                      </Link>
-                    </Typography>
-                  </MenuItem>
+                      </Typography>
+                    </MenuItem>
+                  </Link>
                 ))}
               </Menu>
             </Box>
