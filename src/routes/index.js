@@ -18,6 +18,11 @@ import Document from "../pages/Document";
 import CreateDocument from "../pages/CreateDocument";
 import UpdateDocument from "../pages/UpdateDocument";
 import Management from "../pages/Management";
+import CreateSlider from "../pages/CreateSlider";
+import Collections from "../pages/Collections";
+import Sliders from "../pages/Sliders/Sliders";
+import UpdateSlider from "../pages/UpdateSlider/UpdateSlider";
+import NotFound from "../pages/NotFound";
 
 const publicRoutes = [
   { path: config.routes.getAnswer, component: ToeicForm, layout: null },
@@ -28,6 +33,7 @@ const publicRoutes = [
   { path: config.routes.rankingDetail, component: RankingDetail },
   { path: config.routes.history, component: History },
   { path: config.routes.document, component: Document },
+  { path: config.routes.notFound, component: NotFound },
 ];
 
 const privateRoutes = [
@@ -45,6 +51,26 @@ const privateRoutes = [
     type: "admin",
     path: config.routes.addDocument,
     component: CreateDocument,
+  },
+  {
+    type: "admin",
+    path: config.routes.addSlider,
+    component: CreateSlider,
+  },
+  {
+    type: "admin",
+    path: config.routes.updateSlider,
+    component: UpdateSlider,
+  },
+  {
+    type: "admin",
+    path: config.routes.managementSlider,
+    component: Collections,
+  },
+  {
+    type: "admin",
+    path: config.routes.sliders,
+    component: Sliders,
   },
   {
     type: "admin",

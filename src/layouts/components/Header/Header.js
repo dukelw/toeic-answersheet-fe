@@ -54,6 +54,7 @@ function Header() {
   ];
   const admins = [
     { title: "Document", href: "/document/add" },
+    { title: "Slider", href: "/slider/add" },
     { title: "Test", href: "/test/add" },
   ];
 

@@ -76,6 +76,35 @@ import {
   updateDocumentStart,
   updateDocumentSuccess,
 } from "./documentSlice";
+import {
+  createSliderFailure,
+  createSliderStart,
+  createSliderSuccess,
+  deleteSliderFailure,
+  deleteSliderStart,
+  deleteSliderSuccess,
+  getActiveSlidersFailure,
+  getActiveSlidersStart,
+  getActiveSlidersSuccess,
+  getAllSlidersFailure,
+  getAllSlidersStart,
+  getAllSlidersSuccess,
+  getByCollectionFailure,
+  getByCollectionStart,
+  getByCollectionSuccess,
+  getCollectionsFailure,
+  getCollectionsStart,
+  getCollectionsSuccess,
+  getSliderFailure,
+  getSliderStart,
+  getSliderSuccess,
+  toggleSliderFailure,
+  toggleSliderStart,
+  toggleSliderSuccess,
+  updateSliderFailure,
+  updateSliderStart,
+  updateSliderSuccess,
+} from "./sliderSlice";
 
 const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -527,4 +556,211 @@ export const deleteDocument = async (accessToken, ID, dispatch, axiosJWT) => {
   }
 };
 
-// End answer
+// End document
+
+// Start slider
+
+export const getSlider = async (ID, dispatch) => {
+  dispatch(getSliderStart());
+  try {
+    const res = await axios.get(`${REACT_APP_BASE_URL}slider/find/${ID}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(getSliderSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching answer:", error);
+    dispatch(getSliderFailure());
+  }
+};
+
+export const getAllSliders = async (dispatch) => {
+  dispatch(getAllSlidersStart());
+  try {
+    const res = await axios.get(`${REACT_APP_BASE_URL}slider`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(getAllSlidersSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(getAllSlidersFailure());
+  }
+};
+
+export const getActiveSliders = async (dispatch) => {
+  dispatch(getActiveSlidersStart());
+  try {
+    const res = await axios.get(`${REACT_APP_BASE_URL}slider/find-active`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(getActiveSlidersSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(getActiveSlidersFailure());
+  }
+};
+
+export const getCollections = async (dispatch) => {
+  dispatch(getCollectionsStart());
+  try {
+    const res = await axios.get(`${REACT_APP_BASE_URL}slider/collection`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(getCollectionsSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(getCollectionsFailure());
+  }
+};
+
+export const getByCollections = async (collection, dispatch) => {
+  dispatch(getByCollectionStart());
+  try {
+    const res = await axios.get(
+      `${REACT_APP_BASE_URL}slider/collection/${collection}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    dispatch(getByCollectionSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(getByCollectionFailure());
+  }
+};
+
+export const createSlider = async (
+  accessToken,
+  slider,
+  dispatch,
+  navigate,
+  axiosJWT
+) => {
+  dispatch(createSliderStart());
+  try {
+    const res = await axiosJWT.post(
+      `${REACT_APP_BASE_URL}slider/create`,
+      slider,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(createSliderSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(createSliderFailure());
+  }
+};
+
+export const updateSlider = async (
+  accessToken,
+  slider,
+  dispatch,
+  navigate,
+  axiosJWT
+) => {
+  dispatch(updateSliderStart());
+  try {
+    const res = await axiosJWT.post(
+      `${REACT_APP_BASE_URL}slider/update`,
+      slider,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(updateSliderSuccess(res.data));
+    navigate("/management/collection");
+  } catch (error) {
+    dispatch(updateSliderFailure());
+  }
+};
+
+export const toggleSlider = async (
+  accessToken,
+  slider,
+  dispatch,
+  navigate,
+  axiosJWT
+) => {
+  dispatch(toggleSliderStart());
+  try {
+    const res = await axiosJWT.post(
+      `${REACT_APP_BASE_URL}slider/toggle`,
+      slider,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(toggleSliderSuccess(res.data));
+    getCollections(dispatch);
+  } catch (error) {
+    dispatch(toggleSliderFailure());
+    return false;
+  }
+};
+
+export const deleteSlider = async (accessToken, ID, dispatch, axiosJWT) => {
+  dispatch(deleteSliderStart());
+  try {
+    await axiosJWT.delete(
+      `${REACT_APP_BASE_URL}slider/${ID}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(deleteSliderSuccess());
+  } catch (error) {
+    dispatch(deleteSliderFailure());
+    return false;
+  }
+};
+
+export const deleteCollection = async (
+  accessToken,
+  collection,
+  dispatch,
+  axiosJWT
+) => {
+  dispatch(deleteSliderStart());
+  try {
+    await axiosJWT.delete(
+      `${REACT_APP_BASE_URL}slider/collection/${collection}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(deleteSliderSuccess());
+  } catch (error) {
+    dispatch(deleteSliderFailure());
+    return false;
+  }
+};
+
+// End document

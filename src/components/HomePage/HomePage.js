@@ -4,7 +4,7 @@ import { Carousel } from "react-responsive-carousel";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { getAllAnswers } from "../../redux/apiRequest";
+import { getActiveSliders, getAllAnswers } from "../../redux/apiRequest";
 import { useDispatch } from "react-redux";
 import classNames from "classnames/bind";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -16,6 +16,7 @@ const cx = classNames.bind(styles);
 
 function HomePage() {
   const [content, setContent] = useState([]);
+  const [slider, setSlider] = useState([]);
   const dispatch = useDispatch();
 
   const getContent = async () => {
@@ -23,28 +24,20 @@ function HomePage() {
     return data;
   };
 
+  const getSlider = async () => {
+    const data = await getActiveSliders(dispatch);
+    return data;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const tests = await getContent();
+      const sliders = await getSlider();
       setContent(tests);
+      setSlider(sliders);
     };
     fetchData();
   }, []);
-
-  const items = [
-    {
-      img: "https://toquoc.mediacdn.vn/280518851207290880/2021/11/17/co9-16371265918121873152617-1637131220338-1637131220738965031106.jpg",
-      text: "Welcome To Test System",
-    },
-    {
-      img: "https://image.lag.vn/upload/news/21/12/02/giai-thich-ten-cac-nhan-vat-trong-komi-san-wa-comyushou-desu-1_ABWW.jpg",
-      text: "Practice Makes Perfect",
-    },
-    {
-      img: "https://animegovn.com/wp-content/uploads/2024/04/review-komi-san-wa-komyushou-desu-9-850x450.jpg",
-      text: "We Are Here With You",
-    },
-  ];
 
   return (
     <Container
@@ -69,13 +62,13 @@ function HomePage() {
           emulateTouch
           swipeable
         >
-          {items.map((item, i) => (
+          {slider.map((item, i) => (
             <Paper
               key={i}
               sx={{
                 position: "relative",
                 height: { xs: "200px", sm: "300px", md: "400px" },
-                backgroundImage: `url(${item.img})`,
+                backgroundImage: `url(${item.slider_image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 borderRadius: 1,
@@ -93,7 +86,7 @@ function HomePage() {
                   borderRadius: "4px",
                 }}
               >
-                {item.text}
+                {item.slider_content}
               </Typography>
             </Paper>
           ))}

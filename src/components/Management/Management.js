@@ -33,7 +33,7 @@ function Management() {
     },
     {
       title: "Slider",
-      href: "/management/slider",
+      href: "/management/collection",
       icon: ImageIcon,
       description: "Look at the current slider",
     },

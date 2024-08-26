@@ -6,6 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { IconButton } from "@mui/material";
 
 function ConfirmDelete({ onDelete, color = "#ffffff" }) {
   const [open, setOpen] = useState(false);
@@ -27,10 +28,9 @@ function ConfirmDelete({ onDelete, color = "#ffffff" }) {
 
   return (
     <div>
-      <DeleteForeverIcon
-        onClick={handleClickOpen}
-        sx={{ color: color, cursor: "pointer" }}
-      />
+      <IconButton onClick={handleClickOpen}>
+        <DeleteForeverIcon sx={{ color: color, cursor: "pointer" }} />
+      </IconButton>
       <Dialog
         open={open}
         onClose={handleClose}
