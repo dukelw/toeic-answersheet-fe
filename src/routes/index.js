@@ -8,11 +8,16 @@ import ToeicForm from "../pages/ToeicForm";
 import Signin from "../pages/Signin";
 import Signup from "../pages/Signup";
 import Answers from "../pages/Answers";
+import Documents from "../pages/Documents";
 import Ranking from "../pages/Ranking";
 import RankingDetail from "../pages/RankingDetail";
 import History from "../pages/History";
 import Profile from "../pages/Profile";
 import Account from "../pages/Account";
+import Document from "../pages/Document";
+import CreateDocument from "../pages/CreateDocument";
+import UpdateDocument from "../pages/UpdateDocument";
+import Management from "../pages/Management";
 
 const publicRoutes = [
   { path: config.routes.getAnswer, component: ToeicForm, layout: null },
@@ -22,13 +27,24 @@ const publicRoutes = [
   { path: config.routes.ranking, component: Ranking },
   { path: config.routes.rankingDetail, component: RankingDetail },
   { path: config.routes.history, component: History },
+  { path: config.routes.document, component: Document },
 ];
 
 const privateRoutes = [
   {
     type: "admin",
+    path: config.routes.management,
+    component: Management,
+  },
+  {
+    type: "admin",
     path: config.routes.addAnswer,
     component: CreateAnswer,
+  },
+  {
+    type: "admin",
+    path: config.routes.addDocument,
+    component: CreateDocument,
   },
   {
     type: "admin",
@@ -37,8 +53,18 @@ const privateRoutes = [
   },
   {
     type: "admin",
-    path: config.routes.answers,
+    path: config.routes.updateDocument,
+    component: UpdateDocument,
+  },
+  {
+    type: "admin",
+    path: config.routes.managementAnswer,
     component: Answers,
+  },
+  {
+    type: "admin",
+    path: config.routes.managementDocument,
+    component: Documents,
   },
   {
     type: "admin",

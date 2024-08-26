@@ -14,25 +14,24 @@ import {
   createTheme,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import { deleteAnswer, getAllAnswers } from "../../redux/apiRequest";
+import { deleteDocument, getAllDocuments } from "../../redux/apiRequest";
 import { useDispatch, useSelector } from "react-redux";
 import classNames from "classnames/bind";
-import styles from "./Answers.module.scss";
+import styles from "./Documents.module.scss";
 import ConfirmDelete from "../ConfirmDelete";
 import { createAxios } from "../../createAxios";
 
 const cx = classNames.bind(styles);
 
-function Answers() {
+function Documents() {
   const [content, setContent] = useState([]);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const currentUser = useSelector((state) => state.user.signin.currentUser);
   const accessToken = currentUser?.metadata.tokens.accessToken;
   const axiosJWT = createAxios(currentUser);
 
   const getContent = async () => {
-    const data = await getAllAnswers(dispatch);
+    const data = await getAllDocuments(dispatch);
     return data;
   };
 
@@ -45,7 +44,7 @@ function Answers() {
   }, []);
 
   const handleDelete = async (id) => {
-    await deleteAnswer(accessToken, id, dispatch, axiosJWT);
+    await deleteDocument(accessToken, id, dispatch, axiosJWT);
     window.location.reload();
   };
 
@@ -56,7 +55,7 @@ function Answers() {
     <Container
       sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
-      <h1>All answers</h1>
+      <h1>All documents</h1>
       <TableContainer
         component={Paper}
         sx={{ mt: 3, width: isMobile ? "30%" : "100%" }}
@@ -71,7 +70,10 @@ function Answers() {
                 Name
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#ffffff" }}>
-                Answer
+                Description
+              </TableCell>
+              <TableCell sx={{ fontWeight: "bold", color: "#ffffff" }}>
+                Link
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#ffffff" }}>
                 Image
@@ -93,20 +95,15 @@ function Answers() {
                 }}
               >
                 <TableCell>{index + 1}</TableCell>
+                <TableCell>{row.document_name}</TableCell>
+                <TableCell>{row.document_content}</TableCell>
                 <TableCell>
-                  <Link className={cx("link")} to={`/answersheet/${row._id}`}>
-                    {row.answer_name}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <Link className={cx("link")} to={`/answersheet/${row._id}`}>
-                    {row.answer_content}
-                  </Link>
+                  <Link to={document.document_link}>{row.document_link}</Link>
                 </TableCell>
                 <TableCell>
                   <img
-                    src={row.answer_image}
-                    alt={row.answer_name}
+                    src={row.document_image}
+                    alt={row.document_name}
                     style={{
                       width: "100px",
                       height: "auto",
@@ -119,7 +116,7 @@ function Answers() {
                 <TableCell>
                   <IconButton
                     component={Link}
-                    to={`/update/answer/${row._id}`}
+                    to={`/update/document/${row._id}`}
                     color="primary"
                     sx={{ mr: 1 }}
                   >
@@ -141,4 +138,4 @@ function Answers() {
   );
 }
 
-export default Answers;
+export default Documents;

@@ -654,7 +654,7 @@ function ToeicForm() {
                 variant="contained"
                 color="primary"
               >
-                <Link className={cx("edit-btn")} to={`/update/${id}`}>
+                <Link className={cx("edit-btn")} to={`/update/answer/${id}`}>
                   <EditIcon />
                 </Link>
               </Button>

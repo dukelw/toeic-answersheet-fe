@@ -41,7 +41,7 @@ function Header() {
     { title: "History", href: "/history", admin: false },
     { title: "Ranking", href: "/ranking", admin: false },
     { title: "Document", href: "/document", admin: false },
-    { title: "Tests", href: "/answers", admin: true },
+    { title: "Management", href: "/management", admin: true },
   ];
   const settings = [
     { title: "Profile", href: `/profile/${userID}` },

@@ -3,6 +3,7 @@ import userReducer from "./userSlice";
 import uploadReducer from "./uploadSlice";
 import answerReducer from "./answerSlice";
 import historyReducer from "./historySlice";
+import documentReducer from "./documentSlice";
 
 import {
   persistStore,
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   upload: uploadReducer,
   answer: answerReducer,
   history: historyReducer,
+  document: documentReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

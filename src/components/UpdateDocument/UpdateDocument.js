@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -7,11 +7,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import classNames from "classnames/bind";
-import styles from "./UpdateAnswer.css";
+import styles from "./UpdateDocument.css";
 import {
-  getAnswer,
-  updateAnswer,
-  uploadAudio,
+  getDocument,
+  updateDocument,
   uploadImage,
 } from "../../redux/apiRequest";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,15 +19,13 @@ import { createTheme, useMediaQuery } from "@mui/material";
 
 const cx = classNames.bind(styles);
 
-function UpdateAnswer() {
+function UpdateDocument() {
   const [name, setName] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
-  const [audio, setAudio] = useState(null);
+  const [link, setLink] = useState("");
   const [image, setImage] = useState(null);
-  const [sound, setSound] = useState(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
-  const [isAudioLoading, setIsAudioLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentUser = useSelector((state) => state.user.signin.currentUser);
@@ -40,18 +37,14 @@ function UpdateAnswer() {
     setFile(event.target.files[0]);
   };
 
-  const handleAudioChange = (event) => {
-    setAudio(event.target.files[0]);
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const answerData = {
-      answer_name: name,
-      answer_content: answer,
-      answer_image: image,
-      answer_audio: sound,
+    const documentData = {
+      document_name: name,
+      document_content: description,
+      document_image: image,
+      document_link: link,
     };
 
     if (file) {
@@ -59,31 +52,21 @@ function UpdateAnswer() {
       const imageData = await uploadImage(file, "", dispatch);
 
       if (imageData.img_url) {
-        answerData.answer_image = imageData.img_url;
+        documentData.document_image = imageData.img_url;
       }
       setIsImageLoading(false);
     }
 
-    if (audio) {
-      setIsAudioLoading(true);
-      const audioData = await uploadAudio(audio, dispatch);
-
-      if (audioData.audio_url) {
-        answerData.answer_audio = audioData.audio_url;
-      }
-      setIsAudioLoading(false);
-    }
-
     const data = {
       name,
-      update: answerData,
+      update: documentData,
     };
 
-    await updateAnswer(accessToken, data, dispatch, navigate, axiosJWT);
+    await updateDocument(accessToken, data, dispatch, navigate, axiosJWT);
   };
 
   const getResults = async () => {
-    const response = await getAnswer(id, dispatch);
+    const response = await getDocument(id, dispatch);
     return response;
   };
 
@@ -91,10 +74,9 @@ function UpdateAnswer() {
     const fetchData = async () => {
       const data = await getResults();
       setImage(data.image);
-      setSound(data.audio);
-      setAnswer(data.content);
+      setLink(data.link);
+      setDescription(data.content);
       setName(data.name);
-      console.log(data.audio);
     };
     fetchData();
   }, [id]);
@@ -106,7 +88,7 @@ function UpdateAnswer() {
     <Container
       sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
-      <h1>UPDATE ANSWER</h1>
+      <h1>UPDATE DOCUMENT</h1>
       <form
         style={{ width: isMobile ? "30%" : "100%" }}
         onSubmit={handleSubmit}
@@ -124,17 +106,24 @@ function UpdateAnswer() {
         <Box mb={2}>
           <TextField
             fullWidth
-            label="Answer"
+            label="Description"
             variant="outlined"
-            multiline={true}
-            rows={6}
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </Box>
+        <Box mb={2}>
+          <TextField
+            fullWidth
+            label="Link"
+            variant="outlined"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
           />
         </Box>
         <Box mb={2} sx={{ textAlign: "center" }}>
           <Typography gutterBottom variant="h6">
-            Current Answer
+            Current Image
           </Typography>
           {image && (
             <img
@@ -164,25 +153,6 @@ function UpdateAnswer() {
             <input type="file" hidden onChange={handleFileChange} />
           </Button>
         </Box>
-        <Box mb={2} sx={{ textAlign: "center" }}>
-          <Typography gutterBottom variant="h6">
-            Current Audio
-          </Typography>
-          <audio src={sound} controls></audio>
-        </Box>
-        <Box mb={2}>
-          <Button variant="contained" component="label" fullWidth>
-            {isAudioLoading ? (
-              <>
-                <CircularProgress style={{ color: "#FFFFFF" }} size={24} />
-                &nbsp;Updating Audio...
-              </>
-            ) : (
-              "Upload Audio"
-            )}
-            <input type="file" hidden onChange={handleAudioChange} />
-          </Button>
-        </Box>
         <Box mb={2}>
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Submit
@@ -193,4 +163,4 @@ function UpdateAnswer() {
   );
 }
 
-export default UpdateAnswer;
+export default UpdateDocument;

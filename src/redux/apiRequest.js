@@ -59,6 +59,23 @@ import {
   getRankOfATestStart,
   getRankOfATestSuccess,
 } from "./historySlice";
+import {
+  createDocumentFailure,
+  createDocumentStart,
+  createDocumentSuccess,
+  deleteDocumentFailure,
+  deleteDocumentStart,
+  deleteDocumentSuccess,
+  getAllDocumentsFailure,
+  getAllDocumentsStart,
+  getAllDocumentsSuccess,
+  getDocumentFailure,
+  getDocumentStart,
+  getDocumentSuccess,
+  updateDocumentFailure,
+  updateDocumentStart,
+  updateDocumentSuccess,
+} from "./documentSlice";
 
 const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -406,3 +423,108 @@ export const getRankingListOfATest = async (answerID, dispatch) => {
 };
 
 // End history and ranking
+
+// Start document
+
+export const getDocument = async (ID, dispatch) => {
+  dispatch(getDocumentStart());
+  try {
+    const res = await axios.get(`${REACT_APP_BASE_URL}document/find/${ID}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(getDocumentSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching answer:", error);
+    dispatch(getDocumentFailure());
+  }
+};
+
+export const getAllDocuments = async (dispatch) => {
+  dispatch(getAllDocumentsStart());
+  try {
+    const res = await axios.get(`${REACT_APP_BASE_URL}document`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(getAllDocumentsSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(getAllDocumentsFailure());
+  }
+};
+
+export const createDocument = async (
+  accessToken,
+  document,
+  dispatch,
+  navigate,
+  axiosJWT
+) => {
+  dispatch(createDocumentStart());
+  try {
+    const res = await axiosJWT.post(
+      `${REACT_APP_BASE_URL}document/create`,
+      document,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(createDocumentSuccess(res.data));
+  } catch (error) {
+    dispatch(createDocumentFailure());
+  }
+};
+
+export const updateDocument = async (
+  accessToken,
+  document,
+  dispatch,
+  navigate,
+  axiosJWT
+) => {
+  dispatch(updateDocumentStart());
+  try {
+    const res = await axiosJWT.post(
+      `${REACT_APP_BASE_URL}document/update`,
+      document,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(updateDocumentSuccess(res.data));
+    navigate("/");
+  } catch (error) {
+    dispatch(updateDocumentFailure());
+  }
+};
+
+export const deleteDocument = async (accessToken, ID, dispatch, axiosJWT) => {
+  dispatch(deleteDocumentStart());
+  try {
+    await axiosJWT.delete(
+      `${REACT_APP_BASE_URL}document/${ID}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(deleteDocumentSuccess());
+  } catch (error) {
+    dispatch(deleteDocumentFailure());
+  }
+};
+
+// End answer
