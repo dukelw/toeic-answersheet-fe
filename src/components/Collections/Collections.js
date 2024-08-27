@@ -9,6 +9,8 @@ import {
   createTheme,
   IconButton,
   useMediaQuery,
+  Pagination,
+  TextField,
 } from "@mui/material";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
@@ -24,6 +26,10 @@ import { createAxios } from "../../createAxios";
 import ConfirmDelete from "../ConfirmDelete";
 
 function Collections() {
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [keySearch, setKeySearch] = React.useState("");
+  const itemsPerPage = 6;
+
   const contents = useSelector(
     (state) => state.slider.getCollections.collections
   );
@@ -37,12 +43,16 @@ function Collections() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   React.useEffect(() => {
-    getCollections(dispatch);
-  }, [dispatch]);
+    getCollections(keySearch, dispatch);
+  }, [dispatch, keySearch]);
 
   const handleDelete = async (id) => {
     await deleteCollection(accessToken, id, dispatch, axiosJWT);
     window.location.reload();
+  };
+
+  const handleSearchChange = (e) => {
+    setKeySearch(e.target.value);
   };
 
   const formatSecondaryText = (content) => {
@@ -70,9 +80,16 @@ function Collections() {
 
   const handleOn = (collection) => {
     const data = { collection, activate: true };
-    console.log(`Turned on collection: ${collection}`);
     toggleSlider(accessToken, data, dispatch, navigate, axiosJWT);
   };
+
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = contents?.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <Container
@@ -80,6 +97,13 @@ function Collections() {
       maxWidth="md"
     >
       <h1>Slider Collections</h1>
+      <TextField
+        label="Search Collection"
+        variant="outlined"
+        fullWidth
+        sx={{ mb: 3, maxWidth: isMobile ? "80vw" : "80%" }}
+        onChange={handleSearchChange}
+      />
       <List
         sx={{
           width: "100%",
@@ -87,7 +111,7 @@ function Collections() {
           bgcolor: "background.paper",
         }}
       >
-        {contents?.map((content) => (
+        {currentItems?.map((content) => (
           <ListItem
             key={content.slider_collection}
             sx={{
@@ -138,6 +162,12 @@ function Collections() {
           </ListItem>
         ))}
       </List>
+      <Pagination
+        count={Math.ceil(contents.length / itemsPerPage)}
+        page={currentPage}
+        onChange={handleChangePage}
+        sx={{ mt: 2 }}
+      />
     </Container>
   );
 }

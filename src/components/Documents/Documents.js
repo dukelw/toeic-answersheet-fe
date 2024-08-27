@@ -12,6 +12,8 @@ import {
   IconButton,
   useMediaQuery,
   createTheme,
+  Pagination,
+  TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { deleteDocument, getAllDocuments } from "../../redux/apiRequest";
@@ -25,13 +27,16 @@ const cx = classNames.bind(styles);
 
 function Documents() {
   const [content, setContent] = useState([]);
+  const [keySearch, setKeySearch] = React.useState("");
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.user.signin.currentUser);
   const accessToken = currentUser?.metadata.tokens.accessToken;
   const axiosJWT = createAxios(currentUser);
 
   const getContent = async () => {
-    const data = await getAllDocuments(dispatch);
+    const data = await getAllDocuments(keySearch, dispatch);
     return data;
   };
 
@@ -41,11 +46,19 @@ function Documents() {
       setContent(tests);
     };
     fetchData();
-  }, []);
+  }, [keySearch]);
 
   const handleDelete = async (id) => {
     await deleteDocument(accessToken, id, dispatch, axiosJWT);
     window.location.reload();
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleSearchChange = (e) => {
+    setKeySearch(e.target.value);
   };
 
   const theme = createTheme();
@@ -56,6 +69,13 @@ function Documents() {
       sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
       <h1>All documents</h1>
+      <TextField
+        label="Search Document"
+        variant="outlined"
+        fullWidth
+        sx={{ mb: 3, maxWidth: isMobile ? 400 : "100%" }}
+        onChange={handleSearchChange}
+      />
       <TableContainer
         component={Paper}
         sx={{ mt: 3, width: isMobile ? "30%" : "100%" }}
@@ -84,56 +104,65 @@ function Documents() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {content?.map((row, index) => (
-              <TableRow
-                key={row._id}
-                sx={{
-                  backgroundColor: index % 2 === 0 ? "#f3f6f9" : "#ffffff",
-                  "&:hover": {
-                    backgroundColor: "#e3f2fd",
-                  },
-                }}
-              >
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{row.document_name}</TableCell>
-                <TableCell>{row.document_content}</TableCell>
-                <TableCell>
-                  <Link to={document.document_link}>{row.document_link}</Link>
-                </TableCell>
-                <TableCell>
-                  <img
-                    src={row.document_image}
-                    alt={row.document_name}
-                    style={{
-                      width: "100px",
-                      height: "auto",
-                      padding: "5px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    component={Link}
-                    to={`/update/document/${row._id}`}
-                    color="primary"
-                    sx={{ mr: 1 }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton>
-                    <ConfirmDelete
-                      onDelete={() => handleDelete(row._id)}
-                      color="#F44336"
+            {content
+              ?.slice((page - 1) * itemsPerPage, page * itemsPerPage)
+              .map((row, index) => (
+                <TableRow
+                  key={row._id}
+                  sx={{
+                    backgroundColor: index % 2 === 0 ? "#f3f6f9" : "#ffffff",
+                    "&:hover": {
+                      backgroundColor: "#e3f2fd",
+                    },
+                  }}
+                >
+                  <TableCell>{(page - 1) * itemsPerPage + index + 1}</TableCell>
+                  <TableCell>{row.document_name}</TableCell>
+                  <TableCell>{row.document_content}</TableCell>
+                  <TableCell>
+                    <Link to={row.document_link}>{row.document_link}</Link>
+                  </TableCell>
+                  <TableCell>
+                    <img
+                      src={row.document_image}
+                      alt={row.document_name}
+                      style={{
+                        width: "100px",
+                        height: "auto",
+                        padding: "5px",
+                        border: "1px solid #ddd",
+                        borderRadius: "4px",
+                      }}
                     />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      component={Link}
+                      to={`/update/document/${row._id}`}
+                      color="primary"
+                    >
+                      <IconButton color="primary">
+                        <EditIcon />
+                      </IconButton>
+                    </IconButton>
+                    <IconButton>
+                      <ConfirmDelete
+                        onDelete={() => handleDelete(row._id)}
+                        color="#F44336"
+                      />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Pagination
+        count={Math.ceil(content.length / itemsPerPage)}
+        page={page}
+        onChange={handleChangePage}
+        sx={{ mt: 2 }}
+      />
     </Container>
   );
 }

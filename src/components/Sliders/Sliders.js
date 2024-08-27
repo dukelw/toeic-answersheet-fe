@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Container,
@@ -12,6 +12,7 @@ import {
   IconButton,
   useMediaQuery,
   createTheme,
+  Pagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { deleteSlider, getByCollections } from "../../redux/apiRequest";
@@ -26,6 +27,8 @@ const cx = classNames.bind(styles);
 function Sliders() {
   const content = useSelector((state) => state.slider.getByCollection.sliders);
   const dispatch = useDispatch();
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
   const currentUser = useSelector((state) => state.user.signin.currentUser);
   const accessToken = currentUser?.metadata.tokens.accessToken;
   const axiosJWT = createAxios(currentUser);
@@ -34,6 +37,10 @@ function Sliders() {
   useEffect(() => {
     getByCollections(collection, dispatch);
   }, []);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
   const handleDelete = async (id) => {
     await deleteSlider(accessToken, id, dispatch, axiosJWT);
@@ -73,60 +80,68 @@ function Sliders() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {content?.map((row, index) => (
-              <TableRow
-                key={row._id}
-                sx={{
-                  backgroundColor: index % 2 === 0 ? "#f3f6f9" : "#ffffff",
-                  "&:hover": {
-                    backgroundColor: "#e3f2fd",
-                  },
-                }}
-              >
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{row.slider_content}</TableCell>
-                <TableCell>
-                  <Link
-                    style={{ color: "#1976d2" }}
-                    to={collection.slider_link}
-                  >
-                    {row.slider_link}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <img
-                    src={row.slider_image}
-                    alt={row.slider_name}
-                    style={{
-                      width: "100px",
-                      height: "auto",
-                      padding: "5px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    component={Link}
-                    to={`/update/slider/${row._id}`}
-                    color="primary"
-                    sx={{ mr: 1 }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton>
-                    <ConfirmDelete
-                      onDelete={() => handleDelete(row._id)}
-                      color="#F44336"
+            {content
+              ?.slice((page - 1) * itemsPerPage, page * itemsPerPage)
+              .map((row, index) => (
+                <TableRow
+                  key={row._id}
+                  sx={{
+                    backgroundColor: index % 2 === 0 ? "#f3f6f9" : "#ffffff",
+                    "&:hover": {
+                      backgroundColor: "#e3f2fd",
+                    },
+                  }}
+                >
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{row.slider_content}</TableCell>
+                  <TableCell>
+                    <Link
+                      style={{ color: "#1976d2" }}
+                      to={collection.slider_link}
+                    >
+                      {row.slider_link}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <img
+                      src={row.slider_image}
+                      alt={row.slider_name}
+                      style={{
+                        width: "100px",
+                        height: "auto",
+                        padding: "5px",
+                        border: "1px solid #ddd",
+                        borderRadius: "4px",
+                      }}
                     />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      component={Link}
+                      to={`/update/slider/${row._id}`}
+                      color="primary"
+                      sx={{ mr: 1 }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton>
+                      <ConfirmDelete
+                        onDelete={() => handleDelete(row._id)}
+                        color="#F44336"
+                      />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Pagination
+        count={Math.ceil(content.length / itemsPerPage)}
+        page={page}
+        onChange={handleChangePage}
+        sx={{ mt: 2 }}
+      />
     </Container>
   );
 }

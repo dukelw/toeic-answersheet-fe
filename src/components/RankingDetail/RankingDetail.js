@@ -98,7 +98,7 @@ function RankingDetail() {
             <TableBody>
               {rankings.map((ranking, index) => (
                 <TableRow
-                  key={ranking.history_user_id}
+                  key={index}
                   sx={{
                     backgroundColor: index % 2 === 0 ? "#f3f6f9" : "#ffffff",
                     "&:hover": {

@@ -38,6 +38,7 @@ function Header() {
   };
   const pages = [
     { title: "Guide", href: "/guide", admin: false },
+    { title: "Test", href: "/test", admin: false },
     { title: "History", href: "/history", admin: false },
     { title: "Ranking", href: "/ranking", admin: false },
     { title: "Document", href: "/document", admin: false },

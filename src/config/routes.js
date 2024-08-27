@@ -20,8 +20,9 @@ const routes = {
   profile: "/profile/:id",
   account: "/account/:id",
   document: "/document",
+  test: "/test",
   home: "/",
-  notFound: "*"
+  notFound: "*",
 };
 
 export default routes;

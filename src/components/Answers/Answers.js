@@ -12,6 +12,8 @@ import {
   IconButton,
   useMediaQuery,
   createTheme,
+  Pagination,
+  TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { deleteAnswer, getAllAnswers } from "../../redux/apiRequest";
@@ -25,14 +27,17 @@ const cx = classNames.bind(styles);
 
 function Answers() {
   const [content, setContent] = useState([]);
+  const [keySearch, setKeySearch] = useState("");
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
+
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const currentUser = useSelector((state) => state.user.signin.currentUser);
   const accessToken = currentUser?.metadata.tokens.accessToken;
   const axiosJWT = createAxios(currentUser);
 
   const getContent = async () => {
-    const data = await getAllAnswers(dispatch);
+    const data = await getAllAnswers(keySearch, dispatch);
     return data;
   };
 
@@ -42,7 +47,7 @@ function Answers() {
       setContent(tests);
     };
     fetchData();
-  }, []);
+  }, [keySearch, dispatch]);
 
   const handleDelete = async (id) => {
     await deleteAnswer(accessToken, id, dispatch, axiosJWT);
@@ -52,11 +57,30 @@ function Answers() {
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const indexOfLastItem = page * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = content.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handleChangePage = (event, value) => {
+    setPage(value);
+  };
+
+  const handleSearchChange = (e) => {
+    setKeySearch(e.target.value);
+  };
+
   return (
     <Container
       sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
       <h1>All answers</h1>
+      <TextField
+        label="Search Test"
+        variant="outlined"
+        fullWidth
+        sx={{ mb: 3, maxWidth: isMobile ? "82vw" : "100%" }}
+        onChange={handleSearchChange}
+      />
       <TableContainer
         component={Paper}
         sx={{ mt: 3, width: isMobile ? "30%" : "100%" }}
@@ -82,7 +106,7 @@ function Answers() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {content?.map((row, index) => (
+            {currentItems.map((row, index) => (
               <TableRow
                 key={row._id}
                 sx={{
@@ -92,7 +116,7 @@ function Answers() {
                   },
                 }}
               >
-                <TableCell>{index + 1}</TableCell>
+                <TableCell>{indexOfFirstItem + index + 1}</TableCell>
                 <TableCell>
                   <Link className={cx("link")} to={`/answersheet/${row._id}`}>
                     {row.answer_name}
@@ -121,9 +145,10 @@ function Answers() {
                     component={Link}
                     to={`/update/answer/${row._id}`}
                     color="primary"
-                    sx={{ mr: 1 }}
                   >
-                    <EditIcon />
+                    <IconButton color="primary">
+                      <EditIcon />
+                    </IconButton>
                   </IconButton>
                   <IconButton>
                     <ConfirmDelete
@@ -137,6 +162,12 @@ function Answers() {
           </TableBody>
         </Table>
       </TableContainer>
+      <Pagination
+        count={Math.ceil(content.length / itemsPerPage)}
+        page={page}
+        onChange={handleChangePage}
+        sx={{ marginTop: "20px", display: "flex", justifyContent: "center" }}
+      />
     </Container>
   );
 }

@@ -10,21 +10,27 @@ import {
   createTheme,
   IconButton,
   useMediaQuery,
+  TextField,
 } from "@mui/material";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { getAllDocuments } from "../../redux/apiRequest";
 import { useDispatch, useSelector } from "react-redux";
 
 function Document() {
+  const [keySearch, setKeySearch] = React.useState("");
   const dispatch = useDispatch();
   const documents = useSelector((state) => state.document.getAll.documents);
 
   React.useEffect(() => {
-    getAllDocuments(dispatch);
-  }, [dispatch]);
+    getAllDocuments(keySearch, dispatch);
+  }, [dispatch, keySearch]);
 
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const handleSearchChange = (e) => {
+    setKeySearch(e.target.value);
+  };
 
   return (
     <Container
@@ -32,6 +38,13 @@ function Document() {
       maxWidth="md"
     >
       <h1>TOEIC Document</h1>
+      <TextField
+        label="Search Document"
+        variant="outlined"
+        fullWidth
+        sx={{ mb: 3, maxWidth: isMobile ? 400 : 600 }}
+        onChange={handleSearchChange}
+      />
       <List
         sx={{
           width: "100%",

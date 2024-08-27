@@ -663,13 +663,16 @@ function ToeicForm() {
             )}
             {isAdmin ? (
               <Button
-                sx={{ position: "fixed", bottom: "4%", right: "5%" }}
+                sx={{
+                  position: "fixed",
+                  bottom: "4%",
+                  right: "5%",
+                  padding: "2px 0",
+                }}
                 variant="contained"
                 color="primary"
               >
-                <Link className={cx("edit-btn")}>
-                  <ConfirmDelete onDelete={handleDelete} />
-                </Link>
+                <ConfirmDelete onDelete={handleDelete} />
               </Button>
             ) : (
               ""

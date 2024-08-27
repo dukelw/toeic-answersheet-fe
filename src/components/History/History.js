@@ -7,11 +7,15 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import Typography from "@mui/material/Typography";
 import FolderIcon from "@mui/icons-material/Folder";
 import { getAnswer, getHistoryOfUser } from "../../redux/apiRequest";
 import { useDispatch, useSelector } from "react-redux";
-import { Container } from "@mui/material";
+import {
+  Container,
+  createTheme,
+  TextField,
+  useMediaQuery,
+} from "@mui/material";
 
 const columns = [
   { id: "icon", label: "Icon", minWidth: 50, align: "center" },
@@ -24,6 +28,7 @@ const columns = [
 export default function StickyHeadTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [keySearch, setKeySearch] = useState("");
   const [historyData, setHistoryData] = useState([]);
   const currentUser = useSelector((state) => state.user.signin.currentUser);
   const userID = currentUser?.metadata.user._id;
@@ -45,7 +50,13 @@ export default function StickyHeadTable() {
             };
           })
         );
-        setHistoryData(answers);
+
+        // Lọc những câu trả lời theo từ khóa tìm kiếm
+        const filteredAnswers = keySearch
+          ? answers.filter((answer) => answer.name.includes(keySearch))
+          : answers;
+
+        setHistoryData(filteredAnswers);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -54,7 +65,7 @@ export default function StickyHeadTable() {
     if (userID) {
       fetchData();
     }
-  }, [dispatch, userID]);
+  }, [dispatch, userID, keySearch]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -65,11 +76,25 @@ export default function StickyHeadTable() {
     setPage(0);
   };
 
+  const theme = createTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const handleSearchChange = (e) => {
+    setKeySearch(e.target.value);
+  };
+
   return (
     <Container
       sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
       <h1>TRIAL HISTORY</h1>
+      <TextField
+        label="Search Test"
+        variant="outlined"
+        fullWidth
+        sx={{ mb: 3, maxWidth: isMobile ? 400 : "100%" }}
+        onChange={handleSearchChange}
+      />
       {currentUser ? (
         <Paper
           sx={{

@@ -292,10 +292,11 @@ export const getAnswer = async (ID, dispatch) => {
   }
 };
 
-export const getAllAnswers = async (dispatch) => {
+export const getAllAnswers = async (keySearch, dispatch) => {
   dispatch(getAllAnswersStart());
   try {
-    const res = await axios.get(`${REACT_APP_BASE_URL}answer`, {
+    const link = keySearch !== "" ? `answer?key=${keySearch}` : "answer";
+    const res = await axios.get(`${REACT_APP_BASE_URL}${link}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -471,10 +472,11 @@ export const getDocument = async (ID, dispatch) => {
   }
 };
 
-export const getAllDocuments = async (dispatch) => {
+export const getAllDocuments = async (keySearch, dispatch) => {
   dispatch(getAllDocumentsStart());
   try {
-    const res = await axios.get(`${REACT_APP_BASE_URL}document`, {
+    const link = keySearch !== "" ? `document?key=${keySearch}` : "document";
+    const res = await axios.get(`${REACT_APP_BASE_URL}${link}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -606,10 +608,14 @@ export const getActiveSliders = async (dispatch) => {
   }
 };
 
-export const getCollections = async (dispatch) => {
+export const getCollections = async (keySearch, dispatch) => {
   dispatch(getCollectionsStart());
   try {
-    const res = await axios.get(`${REACT_APP_BASE_URL}slider/collection`, {
+    const link =
+      keySearch === ""
+        ? "slider/collection"
+        : `slider/collection?key=${keySearch}`;
+    const res = await axios.get(`${REACT_APP_BASE_URL}${link}`, {
       headers: {
         "Content-Type": "application/json",
       },

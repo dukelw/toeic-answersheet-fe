@@ -1,45 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Carousel } from "react-responsive-carousel";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { getActiveSliders, getAllAnswers } from "../../redux/apiRequest";
+import { getAllAnswers } from "../../redux/apiRequest";
 import { useDispatch } from "react-redux";
 import classNames from "classnames/bind";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Grid, Paper, Pagination } from "@mui/material";
+import {
+  createTheme,
+  Grid,
+  Pagination,
+  TextField,
+  useMediaQuery,
+} from "@mui/material";
 
-import styles from "./HomePage.module.scss";
+import styles from "./Test.module.scss";
 
 const cx = classNames.bind(styles);
 
-function HomePage() {
+function Test() {
   const [content, setContent] = useState([]);
-  const [slider, setSlider] = useState([]);
+  const [keySearch, setKeySearch] = React.useState("");
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
   const dispatch = useDispatch();
 
   const getContent = async () => {
-    const data = await getAllAnswers("", dispatch);
+    const data = await getAllAnswers(keySearch, dispatch);
     return data;
   };
 
-  const getSlider = async () => {
-    const data = await getActiveSliders(dispatch);
-    return data;
+  const handleSearchChange = (e) => {
+    setKeySearch(e.target.value);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       const tests = await getContent();
-      const sliders = await getSlider();
       setContent(tests);
-      setSlider(sliders);
     };
     fetchData();
-  }, []);
+  }, [keySearch, dispatch]);
 
   const indexOfLastItem = page * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -49,61 +51,27 @@ function HomePage() {
     setPage(value);
   };
 
+  const theme = createTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <Container
       sx={{
         marginTop: "40px",
         paddingLeft: { xs: 1, sm: 2 },
         paddingRight: { xs: 1, sm: 2 },
+        textAlign: "center",
       }}
     >
-      <Paper
-        sx={{
-          display: "block",
-        }}
-      >
-        <Carousel
-          infiniteLoop
-          autoPlay
-          interval={3000}
-          showThumbs={false}
-          showIndicators={true}
-          showStatus={false}
-          emulateTouch
-          swipeable
-        >
-          {slider.map((item, i) => (
-            <Paper
-              key={i}
-              sx={{
-                position: "relative",
-                height: { xs: "200px", sm: "300px", md: "400px" },
-                backgroundImage: `url(${item.slider_image})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                borderRadius: 1,
-              }}
-            >
-              <Typography
-                variant="h5"
-                sx={{
-                  position: "absolute",
-                  bottom: 20,
-                  left: 20,
-                  color: "#fff",
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
-                  padding: "8px",
-                  borderRadius: "4px",
-                }}
-              >
-                {item.slider_content}
-              </Typography>
-            </Paper>
-          ))}
-        </Carousel>
-      </Paper>
-
       <h1>ALL TEST</h1>
+
+      <TextField
+        label="Search Test"
+        variant="outlined"
+        fullWidth
+        sx={{ mb: 3, maxWidth: isMobile ? "90vw" : "100%" }}
+        onChange={handleSearchChange}
+      />
 
       <Grid container spacing={2} sx={{ marginTop: "20px" }}>
         {currentItems.length > 0 ? (
@@ -139,4 +107,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default Test;
