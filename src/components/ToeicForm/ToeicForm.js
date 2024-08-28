@@ -44,11 +44,10 @@ import {
   getComments,
   logout,
 } from "../../redux/apiRequest";
-import Comment from "../Comment";
+import CommentSection from "../CommentSection";
 const cx = classNames.bind(styles);
 
 function ToeicForm() {
-  const [newComment, setNewComment] = useState("");
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { id } = useParams();
@@ -776,11 +775,12 @@ function ToeicForm() {
       >
         Submit
       </Button>
-      <Box sx={{ maxWidth: "600px", mx: "auto", mt: 4 }}>
+      <Box sx={{ mx: "auto", mt: 4 }}>
         <Typography variant="h4" sx={{ mb: 3 }}>
           Comments
         </Typography>
       </Box>
+      <CommentSection answerID={id} />
     </Container>
   );
 }

@@ -24,7 +24,6 @@ import Sliders from "../pages/Sliders/Sliders";
 import UpdateSlider from "../pages/UpdateSlider/UpdateSlider";
 import NotFound from "../pages/NotFound";
 import Test from "../pages/Test";
-import CommentSection from "../components/CommentSection";
 
 const publicRoutes = [
   { path: config.routes.getAnswer, component: ToeicForm, layout: null },
@@ -37,7 +36,6 @@ const publicRoutes = [
   { path: config.routes.document, component: Document },
   { path: config.routes.notFound, component: NotFound },
   { path: config.routes.test, component: Test },
-  { path: config.routes.comment, component: CommentSection },
 ];
 
 const privateRoutes = [

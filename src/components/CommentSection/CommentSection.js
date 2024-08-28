@@ -6,6 +6,8 @@ import {
   Typography,
   IconButton,
   CircularProgress,
+  createTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteComment, getComments } from "../../redux/apiRequest";
@@ -112,20 +114,18 @@ const CommentSection = ({
 
       {replyVisible && (
         <Box sx={{ mt: 2 }}>
-          <TextField
-            label="Write a reply..."
-            variant="outlined"
-            fullWidth
-            value={replyText}
-            onChange={(e) => setReplyText(e.target.value)}
-          />
-          <Button
-            variant="contained"
-            sx={{ mt: 1 }}
-            onClick={handleReplySubmit}
-          >
-            Submit Reply
-          </Button>
+          <Box sx={{ display: "flex" }}>
+            <TextField
+              sx={{ flex: 1, marginRight: "16px" }}
+              label="Write a reply..."
+              variant="outlined"
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+            />
+            <Button variant="contained" onClick={handleReplySubmit}>
+              Reply
+            </Button>
+          </Box>
           <Box sx={{ mt: 2 }}>
             {comment.comment_replies?.length > 0 &&
               comment.comment_replies?.map((reply) => (
@@ -222,26 +222,15 @@ function Comments({ answerID = "66c8c95eb4bc4dbeaa469f18" }) {
 
     socket.on("receive_comment", (newComment) => {
       setCommentDatas((prevComments) => [...prevComments, newComment]);
+      fetchData();
     });
 
     socket.on("reply_comment", (data) => {
-      setCommentDatas((prevComments) => {
-        return prevComments.map((comment) => {
-          if (comment._id === data.parentCommentId) {
-            return {
-              ...comment,
-              comment_replies: [...comment.comment_replies, data.newReply],
-            };
-          }
-          return comment;
-        });
-      });
+      fetchData();
     });
 
     socket.on("change_comment", (data) => {
-      setCommentDatas((prevComments) => {
-        return prevComments.filter((comment) => comment._id !== data.commentId);
-      });
+      fetchData();
     });
 
     return () => {
@@ -307,8 +296,11 @@ function Comments({ answerID = "66c8c95eb4bc4dbeaa469f18" }) {
     }
   };
 
+  const theme = createTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Box sx={{ maxWidth: "600px", mx: "auto", p: 2 }}>
+    <Box sx={{ width: isMobile ? "88%" : "100%", mx: "auto", p: 2 }}>
       {loading && (
         <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
           <CircularProgress />
