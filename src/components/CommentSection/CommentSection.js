@@ -220,16 +220,28 @@ function Comments({ answerID = "66c8c95eb4bc4dbeaa469f18" }) {
   useEffect(() => {
     socket.emit("join_room", answerID);
 
-    socket.on("receive_comment", (data) => {
-      setCommentDatas((prevComments) => [...prevComments, data]);
+    socket.on("receive_comment", (newComment) => {
+      setCommentDatas((prevComments) => [...prevComments, newComment]);
     });
 
     socket.on("reply_comment", (data) => {
-      fetchData();
+      setCommentDatas((prevComments) => {
+        return prevComments.map((comment) => {
+          if (comment._id === data.parentCommentId) {
+            return {
+              ...comment,
+              comment_replies: [...comment.comment_replies, data.newReply],
+            };
+          }
+          return comment;
+        });
+      });
     });
 
     socket.on("change_comment", (data) => {
-      fetchData();
+      setCommentDatas((prevComments) => {
+        return prevComments.filter((comment) => comment._id !== data.commentId);
+      });
     });
 
     return () => {
