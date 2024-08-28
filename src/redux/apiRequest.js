@@ -119,6 +119,17 @@ import {
   getParentStart,
   getParentSuccess,
 } from "./commentSlice";
+import {
+  createNotificationFailure,
+  createNotificationStart,
+  createNotificationSuccess,
+  getAllNotificationsFailure,
+  getAllNotificationsStart,
+  getAllNotificationsSuccess,
+  updateNotificationFailure,
+  updateNotificationStart,
+  updateNotificationSuccess,
+} from "./notificationSlice";
 
 const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -883,3 +894,69 @@ export const deleteComment = async (accessToken, data, dispatch, axiosJWT) => {
 };
 
 // End comment
+
+// Start notification
+
+export const getNotifications = async (ID, dispatch) => {
+  dispatch(getAllNotificationsStart());
+  try {
+    const res = await axios.get(`${REACT_APP_BASE_URL}notification/${ID}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(getAllNotificationsSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching answer:", error);
+    dispatch(getAllNotificationsFailure());
+  }
+};
+
+export const createNotification = async (
+  accessToken,
+  notification,
+  dispatch,
+  axiosJWT
+) => {
+  dispatch(createNotificationStart());
+  try {
+    const res = await axiosJWT.post(
+      `${REACT_APP_BASE_URL}notification`,
+      notification,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(createNotificationSuccess(res.data));
+  } catch (error) {
+    dispatch(createNotificationFailure());
+  }
+};
+
+export const markRead = async (
+  accessToken,
+  notification,
+  dispatch,
+  axiosJWT
+) => {
+  dispatch(updateNotificationStart());
+  try {
+    const res = await axiosJWT.post(
+      `${REACT_APP_BASE_URL}notification/mark-read`,
+      notification,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `${accessToken}`,
+        },
+      }
+    );
+    dispatch(updateNotificationSuccess(res.data));
+  } catch (error) {
+    dispatch(updateNotificationFailure());
+  }
+};

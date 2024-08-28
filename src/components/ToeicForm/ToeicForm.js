@@ -43,6 +43,7 @@ import {
   getAnswer,
   getComments,
   logout,
+  markRead,
 } from "../../redux/apiRequest";
 import CommentSection from "../CommentSection";
 const cx = classNames.bind(styles);
@@ -55,7 +56,6 @@ function ToeicForm() {
   const [name, setName] = useState("");
   const [audio, setAudio] = useState("");
   const [results, setResults] = useState(Array(200).fill(""));
-  const [commentsData, setCommentDatas] = useState([]);
   const [trueAnswers, setTrueAnswers] = useState([]);
   const [listeningTrueAnswers, setListeningTrueAnswers] = useState(0);
   const [readingTrueAnswers, setReadingTrueAnswers] = useState(0);
@@ -98,22 +98,20 @@ function ToeicForm() {
     return response;
   };
 
-  const getCommentsData = async () => {
-    const response = await getComments(id, dispatch);
-    return response;
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       const data = await getResults();
-      const comments = await getCommentsData();
       const answersData = data.content.replace(/, |\s+/g, "");
       setTrueAnswers(answersData);
-      setCommentDatas(comments.metadata);
       setName(data.name);
       setAudio(data.audio);
     };
     fetchData();
+    const notification = {
+      answerID: id,
+      userID,
+    };
+    markRead(accessToken, notification, dispatch, axiosJWT);
   }, [id]);
 
   const [open, setOpen] = React.useState(false);

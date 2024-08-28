@@ -114,18 +114,23 @@ const CommentSection = ({
 
       {replyVisible && (
         <Box sx={{ mt: 2 }}>
-          <Box sx={{ display: "flex" }}>
-            <TextField
-              sx={{ flex: 1, marginRight: "16px" }}
-              label="Write a reply..."
-              variant="outlined"
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-            />
-            <Button variant="contained" onClick={handleReplySubmit}>
-              Reply
-            </Button>
-          </Box>
+          {currentUser ? (
+            <Box sx={{ display: "flex" }}>
+              <TextField
+                sx={{ flex: 1, marginRight: "16px" }}
+                label="Write a reply..."
+                variant="outlined"
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+              />
+              <Button variant="contained" onClick={handleReplySubmit}>
+                Reply
+              </Button>
+            </Box>
+          ) : (
+            <h4>Please signin to reply</h4>
+          )}
+
           <Box sx={{ mt: 2 }}>
             {comment.comment_replies?.length > 0 &&
               comment.comment_replies?.map((reply) => (
@@ -306,19 +311,23 @@ function Comments({ answerID = "66c8c95eb4bc4dbeaa469f18" }) {
           <CircularProgress />
         </Box>
       )}
-      <Box sx={{ display: "flex", mb: 2 }}>
-        <TextField
-          fullWidth
-          label="Add a comment..."
-          variant="outlined"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          onKeyPress={handleKeyPress}
-        />
-        <Button variant="contained" sx={{ ml: 2 }} onClick={handleAddComment}>
-          Post
-        </Button>
-      </Box>
+      {currentUser ? (
+        <Box sx={{ display: "flex", mb: 2 }}>
+          <TextField
+            fullWidth
+            label="Add a comment..."
+            variant="outlined"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            onKeyPress={handleKeyPress}
+          />
+          <Button variant="contained" sx={{ ml: 2 }} onClick={handleAddComment}>
+            Post
+          </Button>
+        </Box>
+      ) : (
+        <h2 style={{ textAlign: "center" }}>Please signin to comment</h2>
+      )}
 
       <CommentsList
         commentsData={commentsData}

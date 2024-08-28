@@ -14,10 +14,15 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import AddIcon from "@mui/icons-material/Add";
 import LoginIcon from "@mui/icons-material/Login";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import io from "socket.io-client";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createAxios } from "../../../createAxios";
-import { logout } from "../../../redux/apiRequest";
+import { findUser, getNotifications, logout } from "../../../redux/apiRequest";
+import { ClickAwayListener, Paper, Popper } from "@mui/material";
+
+const socket = io.connect("http://localhost:4000");
 
 function Header() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -84,6 +89,72 @@ function Header() {
   const handleCloseAdminMenu = () => {
     setAnchorElAdmin(null);
   };
+
+  const [notifications, setNotifications] = React.useState([]);
+  const [haveNotRead, setHaveNotRead] = React.useState(0);
+  const fetchData = async () => {
+    try {
+      const notiData = await getNotifications(userID, dispatch);
+      let count = 0;
+
+      const userPromises = notiData.map(async (notification) => {
+        if (!notification.isRead) {
+          count += 1;
+        }
+        const senderData = await findUser(
+          notification.notification_sender_id,
+          dispatch
+        );
+        const receiverData = await findUser(
+          notification.notification_receiver_id,
+          dispatch
+        );
+
+        return {
+          ...notification,
+          senderData: senderData.metadata.user,
+          receiverData: receiverData.metadata.user,
+        };
+      });
+
+      const notificationsWithUserData = await Promise.all(userPromises);
+      setNotifications(notificationsWithUserData);
+      setHaveNotRead(count);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const [anchorElNotifications, setAnchorElNotifications] =
+    React.useState(null);
+  const [openNotification, setOpenNotification] = React.useState(false);
+
+  const handleOpenNotifications = (event) => {
+    setAnchorElNotifications(event.currentTarget);
+    setOpenNotification((prev) => !prev);
+  };
+
+  const handleCloseNotifications = () => {
+    setOpenNotification(false);
+  };
+
+  const handleNotificationClick = (notification) => {
+    navigate(`/answersheet/${notification.notification_answer_id}`);
+    handleCloseNotifications();
+  };
+
+  React.useEffect(() => {
+    fetchData();
+    socket.emit("join_room", userID);
+
+    socket.on("receive_notification", (data) => {
+      fetchData();
+    });
+
+    return () => {
+      socket.off("receive_notification");
+    };
+  }, [socket]);
 
   return (
     <AppBar position="fixed">
@@ -312,6 +383,96 @@ function Header() {
             </Box>
           ) : (
             <Box sx={{ flexGrow: 0 }}>
+              {/* ______________________________ */}
+              <Tooltip title="Notifications">
+                <IconButton onClick={handleOpenNotifications} sx={{ p: 0 }}>
+                  <NotificationsIcon
+                    sx={{
+                      color: "#ffffff",
+                      fontSize: "32px",
+                      marginRight: "12px",
+                    }}
+                  />
+                  <span
+                    style={{
+                      color: "#1976d2",
+                      textDecoration: "none",
+                      position: "relative",
+                      right: "61%",
+                      top: "50%",
+                      fontSize: "12px",
+                      fontWeight: "600",
+                    }}
+                  >
+                    {haveNotRead}
+                  </span>
+                </IconButton>
+              </Tooltip>
+              <Popper
+                open={openNotification}
+                anchorEl={anchorElNotifications}
+                placement="bottom-end"
+                disablePortal
+              >
+                <ClickAwayListener onClickAway={handleCloseNotifications}>
+                  <Paper
+                    sx={{
+                      p: 2,
+                      maxWidth: 300,
+                      maxHeight: 200,
+                      overflow: "scroll",
+                    }}
+                  >
+                    {notifications.length === 0 ? (
+                      <Typography>No new notifications</Typography>
+                    ) : (
+                      notifications.map((notification) => (
+                        <Box
+                          key={notification._id}
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            mb: 2,
+                            cursor: "pointer",
+                            border: "1px solid #ddd",
+                            borderRadius: "4px",
+                            padding: "8px",
+                            backgroundColor: notification.isRead
+                              ? ""
+                              : "#1976d2",
+                          }}
+                          onClick={() => handleNotificationClick(notification)}
+                        >
+                          <img
+                            src={notification.senderData.avatar}
+                            alt={notification.senderData.name}
+                            style={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: "50%",
+                              marginRight: 8,
+                            }}
+                          />
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              flex: 1,
+                              color: notification.isRead ? "black" : "white",
+                            }}
+                          >
+                            <strong>{notification.senderData.name}</strong>{" "}
+                            <>
+                              has replied{" "}
+                              <strong>{notification.receiverData.name}</strong>:
+                              "{notification.notification_content}"
+                            </>
+                          </Typography>
+                        </Box>
+                      ))
+                    )}
+                  </Paper>
+                </ClickAwayListener>
+              </Popper>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar

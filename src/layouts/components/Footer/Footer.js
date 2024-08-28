@@ -115,12 +115,18 @@ function Footer() {
                   </Link>
                 </Grid>
                 <Grid>
-                  <Link className={cx("link")}>
+                  <Link
+                    to={"mailto:thevi16102004@gmail.com"}
+                    className={cx("link")}
+                  >
                     <AlternateEmailIcon />
                   </Link>
                 </Grid>
                 <Grid>
-                  <Link className={cx("link")}>
+                  <Link
+                    to={"https://www.linkedin.com/in/le-phan-the-vi-b98842325/"}
+                    className={cx("link")}
+                  >
                     <LinkedInIcon />
                   </Link>
                 </Grid>

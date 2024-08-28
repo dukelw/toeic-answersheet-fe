@@ -6,6 +6,7 @@ import historyReducer from "./historySlice";
 import documentReducer from "./documentSlice";
 import sliderReducer from "./sliderSlice";
 import commentReducer from "./commentSlice";
+import notificationReducer from "./notificationSlice";
 
 import {
   persistStore,
@@ -33,6 +34,7 @@ const rootReducer = combineReducers({
   document: documentReducer,
   slider: sliderReducer,
   comment: commentReducer,
+  notification: notificationReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
