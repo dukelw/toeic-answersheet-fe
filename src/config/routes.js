@@ -15,6 +15,7 @@ const routes = {
   managementUser: "/management/user",
   management: "/management",
   history: "/history",
+  comment: "/comment",
   rankingDetail: "/ranking/:id",
   ranking: "/ranking",
   profile: "/profile/:id",

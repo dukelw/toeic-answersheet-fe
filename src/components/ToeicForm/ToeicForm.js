@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
@@ -18,6 +18,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  TextField,
   Tooltip,
   useMediaQuery,
 } from "@mui/material";
@@ -35,16 +36,19 @@ import Countdown from "../Countdown";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createAxios } from "../../createAxios";
+import CONSTANTS from "../../constants";
 import {
   createHistory,
   deleteAnswer,
   getAnswer,
+  getComments,
   logout,
 } from "../../redux/apiRequest";
-
+import Comment from "../Comment";
 const cx = classNames.bind(styles);
 
 function ToeicForm() {
+  const [newComment, setNewComment] = useState("");
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { id } = useParams();
@@ -52,215 +56,12 @@ function ToeicForm() {
   const [name, setName] = useState("");
   const [audio, setAudio] = useState("");
   const [results, setResults] = useState(Array(200).fill(""));
+  const [commentsData, setCommentDatas] = useState([]);
   const [trueAnswers, setTrueAnswers] = useState([]);
   const [listeningTrueAnswers, setListeningTrueAnswers] = useState(0);
   const [readingTrueAnswers, setReadingTrueAnswers] = useState(0);
-  const listeningScores = [
-    5,
-    5,
-    5,
-    10,
-    15,
-    20,
-    25,
-    30,
-    35,
-    40, // 0-9
-    45,
-    50,
-    55,
-    60,
-    65,
-    70,
-    75,
-    80,
-    85,
-    90, // 10-19
-    95,
-    100,
-    105,
-    110,
-    115,
-    120,
-    125,
-    130,
-    135,
-    140, // 20-29
-    145,
-    150,
-    155,
-    160,
-    165,
-    170,
-    175,
-    180,
-    185,
-    190, // 30-39
-    195,
-    200,
-    205,
-    210,
-    215,
-    220,
-    225,
-    230,
-    235,
-    240, // 40-49
-    245,
-    250,
-    255,
-    260,
-    265,
-    270,
-    275,
-    280,
-    285,
-    290, // 50-59
-    295,
-    300,
-    305,
-    310,
-    315,
-    320,
-    325,
-    330,
-    335,
-    340, // 60-69
-    345,
-    350,
-    355,
-    360,
-    365,
-    370,
-    375,
-    380,
-    385,
-    390, // 70-79
-    395,
-    400,
-    405,
-    410,
-    415,
-    420,
-    425,
-    430,
-    435,
-    440, // 80-89
-    445,
-    450,
-    455,
-    460,
-    465,
-    470,
-    475,
-    480,
-    485,
-    490,
-    495, // 90-100
-  ];
-  const readingScores = [
-    5,
-    15,
-    20,
-    25,
-    30,
-    35,
-    40,
-    45,
-    50,
-    55, // 0-9
-    60,
-    65,
-    70,
-    75,
-    80,
-    85,
-    90,
-    95,
-    100,
-    105, // 10-19
-    110,
-    115,
-    120,
-    125,
-    130,
-    135,
-    140,
-    145,
-    150,
-    155, // 20-29
-    160,
-    165,
-    170,
-    175,
-    180,
-    185,
-    190,
-    195,
-    200,
-    205, // 30-39
-    210,
-    215,
-    220,
-    225,
-    230,
-    235,
-    240,
-    245,
-    250,
-    255, // 40-49
-    260,
-    265,
-    270,
-    275,
-    280,
-    285,
-    290,
-    295,
-    300,
-    305, // 50-59
-    310,
-    315,
-    320,
-    325,
-    330,
-    335,
-    340,
-    345,
-    350,
-    355, // 60-69
-    360,
-    365,
-    370,
-    375,
-    380,
-    385,
-    390,
-    395,
-    400,
-    405, // 70-79
-    410,
-    415,
-    420,
-    425,
-    430,
-    435,
-    440,
-    445,
-    450,
-    455, // 80-89
-    460,
-    465,
-    470,
-    475,
-    480,
-    485,
-    490,
-    495,
-    495,
-    495, // 90-100
-  ];
   const audioRef = useRef(null);
+  const { listeningScores, readingScores } = CONSTANTS;
 
   const handleLogout = () => {
     logout(accessToken, userID, dispatch, navigate, axiosJWT);
@@ -298,11 +99,18 @@ function ToeicForm() {
     return response;
   };
 
+  const getCommentsData = async () => {
+    const response = await getComments(id, dispatch);
+    return response;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await getResults();
+      const comments = await getCommentsData();
       const answersData = data.content.replace(/, |\s+/g, "");
       setTrueAnswers(answersData);
+      setCommentDatas(comments.metadata);
       setName(data.name);
       setAudio(data.audio);
     };
@@ -319,11 +127,14 @@ function ToeicForm() {
     setOpen(false);
   };
 
-  const handleAnswerChange = (index, event) => {
-    const newAnswers = [...answers];
-    newAnswers[index] = event.target.value;
-    setAnswers(newAnswers);
-  };
+  const handleAnswerChange = useCallback(
+    (index, event) => {
+      const newAnswers = [...answers];
+      newAnswers[index] = event.target.value;
+      setAnswers(newAnswers);
+    },
+    [answers]
+  );
 
   const handleSubmit = () => {
     let listeningCount = 0;
@@ -362,30 +173,6 @@ function ToeicForm() {
     setReadingTrueAnswers(readingCount);
     setResults(newResults);
     handleOpen();
-  };
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const currentUser = useSelector((state) => state.user.signin.currentUser);
-  const isAdmin = currentUser?.metadata.user.isAdmin;
-  const avatar = currentUser?.metadata.user.user_avatar;
-  const userID = currentUser?.metadata.user._id;
-  const accessToken = currentUser?.metadata.tokens.accessToken;
-  const axiosJWT = createAxios(currentUser);
-
-  const theme = createTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: isMobile ? 360 : 800,
-    bgcolor: "#1976d2",
-    color: "#ffffff",
-    boxShadow: 24,
-    p: 4,
   };
 
   const renderQuestions = (start, end) => {
@@ -503,6 +290,30 @@ function ToeicForm() {
           "This function supports only Chrome, Firefox, Safari and Edge browsers, sorry!"
         );
       });
+  };
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const currentUser = useSelector((state) => state.user.signin.currentUser);
+  const isAdmin = currentUser?.metadata.user.isAdmin;
+  const avatar = currentUser?.metadata.user.user_avatar;
+  const userID = currentUser?.metadata.user._id;
+  const accessToken = currentUser?.metadata.tokens.accessToken;
+  const axiosJWT = createAxios(currentUser);
+
+  const theme = createTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: isMobile ? 360 : 800,
+    bgcolor: "#1976d2",
+    color: "#ffffff",
+    boxShadow: 24,
+    p: 4,
   };
 
   const handleDelete = async () => {
@@ -965,6 +776,11 @@ function ToeicForm() {
       >
         Submit
       </Button>
+      <Box sx={{ maxWidth: "600px", mx: "auto", mt: 4 }}>
+        <Typography variant="h4" sx={{ mb: 3 }}>
+          Comments
+        </Typography>
+      </Box>
     </Container>
   );
 }

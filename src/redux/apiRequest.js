@@ -105,6 +105,20 @@ import {
   updateSliderStart,
   updateSliderSuccess,
 } from "./sliderSlice";
+import {
+  createCommentFailure,
+  createCommentStart,
+  createCommentSuccess,
+  deleteCommentFailure,
+  deleteCommentStart,
+  deleteCommentSuccess,
+  getChildrenFailure,
+  getChildrenStart,
+  getChildrenSuccess,
+  getParentFailure,
+  getParentStart,
+  getParentSuccess,
+} from "./commentSlice";
 
 const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -770,3 +784,102 @@ export const deleteCollection = async (
 };
 
 // End document
+
+// Start comment
+
+export const getComments = async (ID, dispatch) => {
+  dispatch(getParentStart());
+  try {
+    const res = await axios.get(`${REACT_APP_BASE_URL}comment/answer/${ID}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(getParentSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching answer:", error);
+    dispatch(getParentFailure());
+  }
+};
+
+export const getReply = async (answerID, commentID, dispatch) => {
+  dispatch(getChildrenStart());
+  try {
+    const link = `comment?answer_id=${answerID}&parent_comment_id=${commentID}`;
+    const res = await axios.get(`${REACT_APP_BASE_URL}${link}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(getChildrenSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(getChildrenFailure());
+  }
+};
+
+export const createComment = async (
+  accessToken,
+  comment,
+  dispatch,
+  navigate,
+  axiosJWT
+) => {
+  dispatch(createCommentStart());
+  try {
+    const res = await axiosJWT.post(`${REACT_APP_BASE_URL}comment`, comment, {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `${accessToken}`,
+      },
+    });
+    dispatch(createCommentSuccess(res.data));
+  } catch (error) {
+    dispatch(createCommentFailure());
+  }
+};
+
+// export const updateAnswer = async (
+//   accessToken,
+//   answer,
+//   dispatch,
+//   navigate,
+//   axiosJWT
+// ) => {
+//   dispatch(updateAnswerStart());
+//   try {
+//     const res = await axiosJWT.post(
+//       `${REACT_APP_BASE_URL}answer/update`,
+//       answer,
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//           authorization: `${accessToken}`,
+//         },
+//       }
+//     );
+//     dispatch(updateAnswerSuccess(res.data));
+//     navigate("/");
+//   } catch (error) {
+//     dispatch(updateAnswerFailure());
+//   }
+// };
+
+export const deleteComment = async (accessToken, data, dispatch, axiosJWT) => {
+  dispatch(deleteCommentStart());
+  try {
+    await axiosJWT.delete(`${REACT_APP_BASE_URL}comment`, {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `${accessToken}`,
+      },
+      data: data,
+    });
+    dispatch(deleteCommentSuccess());
+  } catch (error) {
+    dispatch(deleteCommentFailure());
+  }
+};
+
+// End comment
