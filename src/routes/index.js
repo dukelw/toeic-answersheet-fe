@@ -25,6 +25,7 @@ import Users from "../pages/Users";
 import UpdateSlider from "../pages/UpdateSlider";
 import NotFound from "../pages/NotFound";
 import Test from "../pages/Test";
+import Guide from "../pages/Guide";
 
 const publicRoutes = [
   { path: config.routes.getAnswer, component: ToeicForm, layout: null },
@@ -37,6 +38,7 @@ const publicRoutes = [
   { path: config.routes.document, component: Document },
   { path: config.routes.notFound, component: NotFound },
   { path: config.routes.test, component: Test },
+  { path: config.routes.guide, component: Guide },
 ];
 
 const privateRoutes = [

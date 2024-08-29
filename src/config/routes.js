@@ -21,6 +21,7 @@ const routes = {
   account: "/account/:id",
   document: "/document",
   test: "/test",
+  guide: "/guide",
   home: "/",
   notFound: "*",
 };
