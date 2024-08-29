@@ -49,7 +49,7 @@ function HomePage() {
 
   const indexOfLastItem = page * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = content.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = content?.slice(indexOfFirstItem, indexOfLastItem);
 
   const handleChangePage = (event, value) => {
     setPage(value);
@@ -116,7 +116,7 @@ function HomePage() {
       <h1>ALL TEST</h1>
 
       <Grid container spacing={2} sx={{ marginTop: "20px" }}>
-        {currentItems.length > 0 ? (
+        {currentItems?.length > 0 ? (
           currentItems?.map((item) => (
             <Grid item xs={12} sm={12} md={4} lg={2.4} key={item._id}>
               <Link to={`/answersheet/${item._id}`}>
@@ -140,7 +140,7 @@ function HomePage() {
       </Grid>
 
       <Pagination
-        count={Math.ceil(content.length / itemsPerPage)}
+        count={Math.ceil(content?.length / itemsPerPage)}
         page={page}
         onChange={handleChangePage}
         sx={{ marginTop: "20px", display: "flex", justifyContent: "center" }}

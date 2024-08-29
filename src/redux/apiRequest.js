@@ -388,6 +388,7 @@ export const getAnswer = async (ID, dispatch) => {
 export const getAllAnswers = async (keySearch, dispatch) => {
   dispatch(getAllAnswersStart());
   try {
+    console.log(REACT_APP_BASE_URL);
     const link = keySearch !== "" ? `answer?key=${keySearch}` : "answer";
     const res = await axios.get(`${REACT_APP_BASE_URL}${link}`, {
       headers: {
