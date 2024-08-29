@@ -39,16 +39,15 @@ function Guide() {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography>
-            Suggestion: Our website can be used without an account, but if you
-            want the best experience, please log in before doing the tests.
-          </Typography>
+          <Typography>Suggestion</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
-            You can Sign up for new account, Sign in when already have one.
-            Moreover, you can change your information which will be displayed in
-            the ranking list. Here are the instructions for.
+            Our website can be used without an account, but if you want the best
+            experience, please log in before doing the tests. You can Sign up
+            for new account, Sign in when already have one. Moreover, you can
+            change your information which will be displayed in the ranking list.
+            Here are the instructions for.
           </Typography>
           {suggestion.map((step, index) => (
             <GuideSection

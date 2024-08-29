@@ -22,7 +22,7 @@ import { createAxios } from "../../../createAxios";
 import { findUser, getNotifications, logout } from "../../../redux/apiRequest";
 import { ClickAwayListener, Paper, Popper } from "@mui/material";
 
-const socket = io.connect("http://localhost:4000");
+const socket = io.connect("https://toeic-answersheet-be.onrender.com");
 
 function Header() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -176,7 +176,7 @@ function Header() {
               textDecoration: "none",
             }}
           >
-            LOGO
+            HOME
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -258,7 +258,7 @@ function Header() {
               textDecoration: "none",
             }}
           >
-            LOGO
+            HOME
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => {

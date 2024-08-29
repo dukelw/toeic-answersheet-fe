@@ -124,7 +124,7 @@ function RankingDetail() {
           </Table>
         </TableContainer>
       ) : (
-        <h1>THIS TEST HAS NOT DONE BY ANY USER</h1>
+        <h1>THIS TEST HAS NOT BEEN DONE BY ANY USER</h1>
       )}
     </Container>
   );

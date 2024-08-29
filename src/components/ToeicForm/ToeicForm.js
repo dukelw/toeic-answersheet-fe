@@ -280,7 +280,7 @@ function ToeicForm() {
             readingTrueAnswers - 1 >= 0 ? readingTrueAnswers - 1 : 0
           ];
         const totalScore = listeningScore + readingScore;
-        pdf.save(`${name}_${totalScore}.pdf`);
+        pdf.save(`${name} ${totalScore}.pdf`);
       })
       .catch(() => {
         alert(

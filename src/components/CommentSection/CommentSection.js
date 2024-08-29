@@ -17,7 +17,7 @@ import io from "socket.io-client";
 import { createAxios } from "../../createAxios";
 import moment from "moment";
 
-const socket = io.connect("http://localhost:4000");
+const socket = io.connect("https://toeic-answersheet-be.onrender.com");
 
 const timeFromNow = (createdAt) => {
   const now = moment();
