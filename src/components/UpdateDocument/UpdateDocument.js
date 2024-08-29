@@ -103,7 +103,7 @@ function UpdateDocument() {
     >
       <h1>UPDATE DOCUMENT</h1>
       <form
-        style={{ width: isMobile ? "30%" : "100%" }}
+        style={{ width: isMobile ? "82vw" : "100%" }}
         onSubmit={handleSubmit}
         className={cx("form")}
       >

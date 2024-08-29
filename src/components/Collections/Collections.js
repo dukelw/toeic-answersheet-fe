@@ -101,13 +101,13 @@ function Collections() {
         label="Search Collection"
         variant="outlined"
         fullWidth
-        sx={{ mb: 3, maxWidth: isMobile ? "80vw" : "100%" }}
+        sx={{ mb: 3, maxWidth: isMobile ? "82vw" : "100%" }}
         onChange={handleSearchChange}
       />
       <List
         sx={{
           width: "100%",
-          maxWidth: isMobile ? 400 : 1000,
+          maxWidth: isMobile ? "82vw" : 1000,
           bgcolor: "background.paper",
         }}
       >

@@ -63,7 +63,7 @@ function Sliders() {
       <h1>Sliders of Collection {collection}</h1>
       <TableContainer
         component={Paper}
-        sx={{ mt: 3, width: isMobile ? "30%" : "100%" }}
+        sx={{ mt: 3, width: isMobile ? "82vw" : "100%" }}
       >
         <Table>
           <TableHead>

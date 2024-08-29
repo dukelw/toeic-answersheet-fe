@@ -104,7 +104,7 @@ function Account() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Container sx={{ width: isMobile ? "36%" : "100%" }} maxWidth="sm">
+    <Container sx={{ width: isMobile ? "82vw" : "100%" }} maxWidth="sm">
       <h1>Change Password</h1>
       <Paper elevation={3} sx={{ padding: 4 }}>
         <form onSubmit={handleSubmit}>

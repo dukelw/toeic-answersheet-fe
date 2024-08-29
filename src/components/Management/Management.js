@@ -57,7 +57,7 @@ function Management() {
       <List
         sx={{
           width: "100%",
-          maxWidth: isMobile ? 400 : 1000,
+          maxWidth: isMobile ? "82vw" : 1000,
           bgcolor: "background.paper",
         }}
       >

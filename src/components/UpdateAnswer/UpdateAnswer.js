@@ -123,7 +123,7 @@ function UpdateAnswer() {
     >
       <h1>UPDATE ANSWER</h1>
       <form
-        style={{ width: isMobile ? "30%" : "100%" }}
+        style={{ width: isMobile ? "82vw" : "100%" }}
         onSubmit={handleSubmit}
         className={cx("form")}
       >

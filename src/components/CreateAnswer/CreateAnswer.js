@@ -90,7 +90,7 @@ function CreateAnswer() {
     >
       <h1>CREATE ANSWER</h1>
       <form
-        style={{ width: isMobile ? "30%" : "100%" }}
+        style={{ width: isMobile ? "82vw" : "100%" }}
         onSubmit={handleSubmit}
         className={cx("form")}
       >

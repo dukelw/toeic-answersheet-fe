@@ -41,13 +41,13 @@ function Document() {
         label="Search Document"
         variant="outlined"
         fullWidth
-        sx={{ mb: 3, maxWidth: isMobile ? 400 : 800 }}
+        sx={{ mb: 3, maxWidth: isMobile ? "82vw" : 800 }}
         onChange={handleSearchChange}
       />
       <List
         sx={{
           width: "100%",
-          maxWidth: isMobile ? 400 : 800,
+          maxWidth: isMobile ? "82vw" : 800,
           bgcolor: "background.paper",
         }}
       >

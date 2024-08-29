@@ -90,12 +90,12 @@ function Users() {
         label="Search User"
         variant="outlined"
         fullWidth
-        sx={{ mb: 3, maxWidth: isMobile ? 400 : "100%" }}
+        sx={{ mb: 3, maxWidth: isMobile ? "82vw" : "100%" }}
         onChange={handleSearchChange}
       />
       <TableContainer
         component={Paper}
-        sx={{ mt: 3, width: isMobile ? "30%" : "100%" }}
+        sx={{ mt: 3, width: isMobile ? "82vw" : "100%" }}
       >
         <Table>
           <TableHead>

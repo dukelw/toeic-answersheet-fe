@@ -33,7 +33,7 @@ function Guide() {
     >
       <h1>HOW TO USE THE WEBSITE?</h1>
 
-      <Accordion sx={{ width: isMobile ? "100%" : "80%", mb: 2 }}>
+      <Accordion sx={{ width: isMobile ? "82vw" : "80%", mb: 2 }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
@@ -59,7 +59,7 @@ function Guide() {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion sx={{ width: isMobile ? "100%" : "80%", mb: 2 }}>
+      <Accordion sx={{ width: isMobile ? "82vw" : "80%", mb: 2 }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
@@ -82,7 +82,7 @@ function Guide() {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion sx={{ width: isMobile ? "100%" : "80%", mb: 2 }}>
+      <Accordion sx={{ width: isMobile ? "82vw" : "80%", mb: 2 }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel2a-content"
@@ -105,7 +105,7 @@ function Guide() {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion sx={{ width: isMobile ? "100%" : "80%", mb: 2 }}>
+      <Accordion sx={{ width: isMobile ? "82vw" : "80%", mb: 2 }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel3a-content"

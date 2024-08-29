@@ -73,7 +73,7 @@ const Ranking = () => {
               </ListItemIcon>
               <ListItemText
                 sx={{
-                  maxWidth: isMobile ? "300px" : "unset",
+                  maxWidth: isMobile ? "82vw" : "unset",
                   backgroundColor: "#1976d2",
                   padding: "8px",
                 }}

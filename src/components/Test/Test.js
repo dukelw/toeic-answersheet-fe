@@ -71,7 +71,7 @@ function Test() {
         label="Search Test"
         variant="outlined"
         fullWidth
-        sx={{ mb: 3, maxWidth: isMobile ? "90vw" : "100%" }}
+        sx={{ mb: 3, maxWidth: isMobile ? "82vw" : "100%" }}
         onChange={handleSearchChange}
       />
 

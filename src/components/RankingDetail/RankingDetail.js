@@ -77,7 +77,7 @@ function RankingDetail() {
 
       {rankings.length > 0 ? (
         <TableContainer
-          sx={{ width: isMobile ? "30%" : "100%" }}
+          sx={{ width: isMobile ? "82vw" : "100%" }}
           component={Paper}
         >
           <Table>

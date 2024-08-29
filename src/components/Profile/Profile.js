@@ -135,7 +135,7 @@ function Profile() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Container sx={{ width: isMobile ? "36%" : "100%" }} maxWidth="md">
+    <Container sx={{ width: isMobile ? "82vw" : "100%" }} maxWidth="md">
       <h1>Your Profile</h1>
       <Paper elevation={3} sx={{ padding: 4 }}>
         <Grid container spacing={2} alignItems="center" justifyContent="center">

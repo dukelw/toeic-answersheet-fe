@@ -93,13 +93,13 @@ export default function StickyHeadTable() {
         label="Search Test"
         variant="outlined"
         fullWidth
-        sx={{ mb: 3, maxWidth: isMobile ? 400 : isTablet ? "64%" : "100%" }}
+        sx={{ mb: 3, maxWidth: isMobile ? "82vw" : isTablet ? "64%" : "100%" }}
         onChange={handleSearchChange}
       />
       {currentUser ? (
         <Paper
           sx={{
-            width: isMobile ? "30%" : isTablet ? "64%" : "100%",
+            width: isMobile ? "82vw" : isTablet ? "64%" : "100%",
             overflow: "hidden",
             marginLeft: { xs: "0 20px " },
           }}
