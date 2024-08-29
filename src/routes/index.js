@@ -20,8 +20,9 @@ import UpdateDocument from "../pages/UpdateDocument";
 import Management from "../pages/Management";
 import CreateSlider from "../pages/CreateSlider";
 import Collections from "../pages/Collections";
-import Sliders from "../pages/Sliders/Sliders";
-import UpdateSlider from "../pages/UpdateSlider/UpdateSlider";
+import Sliders from "../pages/Sliders";
+import Users from "../pages/Users";
+import UpdateSlider from "../pages/UpdateSlider";
 import NotFound from "../pages/NotFound";
 import Test from "../pages/Test";
 
@@ -88,6 +89,11 @@ const privateRoutes = [
     type: "admin",
     path: config.routes.managementAnswer,
     component: Answers,
+  },
+  {
+    type: "admin",
+    path: config.routes.managementUser,
+    component: Users,
   },
   {
     type: "admin",

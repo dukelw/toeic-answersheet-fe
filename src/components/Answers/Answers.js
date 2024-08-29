@@ -50,12 +50,19 @@ function Answers() {
   }, [keySearch, dispatch]);
 
   const handleDelete = async (id) => {
-    await deleteAnswer(accessToken, id, dispatch, axiosJWT);
+    await deleteAnswer(
+      accessToken,
+      currentUser.metadata.user._id,
+      id,
+      dispatch,
+      axiosJWT
+    );
     window.location.reload();
   };
 
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
 
   const indexOfLastItem = page * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -71,7 +78,12 @@ function Answers() {
 
   return (
     <Container
-      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      sx={{
+        width: isTablet ? "72%" : "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
     >
       <h1>All answers</h1>
       <TextField

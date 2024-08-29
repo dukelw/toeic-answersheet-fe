@@ -29,9 +29,10 @@ const Ranking = () => {
 
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
 
   return (
-    <Container sx={{ mt: 5, width: "100%" }}>
+    <Container sx={{ mt: 5, width: isTablet ? "72%" : "100%" }}>
       <Typography
         variant="h5"
         align="center"

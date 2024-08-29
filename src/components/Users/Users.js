@@ -16,16 +16,16 @@ import {
   TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import { deleteDocument, getAllDocuments } from "../../redux/apiRequest";
+import { banUser, findAllUser } from "../../redux/apiRequest";
 import { useDispatch, useSelector } from "react-redux";
 import classNames from "classnames/bind";
-import styles from "./Documents.module.scss";
+import styles from "./Users.module.scss";
 import ConfirmDelete from "../ConfirmDelete";
 import { createAxios } from "../../createAxios";
 
 const cx = classNames.bind(styles);
 
-function Documents() {
+function Users() {
   const [content, setContent] = useState([]);
   const [keySearch, setKeySearch] = React.useState("");
   const [page, setPage] = useState(1);
@@ -36,20 +36,20 @@ function Documents() {
   const axiosJWT = createAxios(currentUser);
 
   const getContent = async () => {
-    const data = await getAllDocuments(keySearch, dispatch);
+    const data = await findAllUser(keySearch, dispatch);
     return data;
   };
 
   useEffect(() => {
     const fetchData = async () => {
       const tests = await getContent();
-      setContent(tests);
+      setContent(tests.metadata);
     };
     fetchData();
   }, [keySearch]);
 
   const handleDelete = async (id) => {
-    await deleteDocument(
+    await banUser(
       accessToken,
       currentUser.metadata.user._id,
       id,
@@ -71,6 +71,11 @@ function Documents() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
 
+  const formatDate = (dateString) => {
+    const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+    return new Date(dateString).toLocaleDateString("en-GB", options);
+  };
+
   return (
     <Container
       sx={{
@@ -80,9 +85,9 @@ function Documents() {
         alignItems: "center",
       }}
     >
-      <h1>All documents</h1>
+      <h1>All users</h1>
       <TextField
-        label="Search Document"
+        label="Search User"
         variant="outlined"
         fullWidth
         sx={{ mb: 3, maxWidth: isMobile ? 400 : "100%" }}
@@ -102,16 +107,19 @@ function Documents() {
                 Name
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#ffffff" }}>
-                Description
+                Birthday
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#ffffff" }}>
-                Link
+                Phone
+              </TableCell>
+              <TableCell sx={{ fontWeight: "bold", color: "#ffffff" }}>
+                Role
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#ffffff" }}>
                 Image
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#ffffff" }}>
-                Actions
+                Ban
               </TableCell>
             </TableRow>
           </TableHead>
@@ -129,15 +137,14 @@ function Documents() {
                   }}
                 >
                   <TableCell>{(page - 1) * itemsPerPage + index + 1}</TableCell>
-                  <TableCell>{row.document_name}</TableCell>
-                  <TableCell>{row.document_content}</TableCell>
-                  <TableCell>
-                    <Link to={row.document_link}>{row.document_link}</Link>
-                  </TableCell>
+                  <TableCell>{row.user_name}</TableCell>
+                  <TableCell>{formatDate(row.user_birthday)}</TableCell>
+                  <TableCell>{row.user_phone}</TableCell>
+                  <TableCell>{row.isAdmin ? "Admin" : "User"}</TableCell>
                   <TableCell>
                     <img
-                      src={row.document_image}
-                      alt={row.document_name}
+                      src={row.user_avatar}
+                      alt={row.user_name}
                       style={{
                         width: "100px",
                         height: "auto",
@@ -148,15 +155,6 @@ function Documents() {
                     />
                   </TableCell>
                   <TableCell>
-                    <IconButton
-                      component={Link}
-                      to={`/update/document/${row._id}`}
-                      color="primary"
-                    >
-                      <IconButton color="primary">
-                        <EditIcon />
-                      </IconButton>
-                    </IconButton>
                     <IconButton>
                       <ConfirmDelete
                         onDelete={() => handleDelete(row._id)}
@@ -179,4 +177,4 @@ function Documents() {
   );
 }
 
-export default Documents;
+export default Users;

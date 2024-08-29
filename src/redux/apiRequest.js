@@ -19,6 +19,12 @@ import {
   changePasswordStart,
   changePasswordSuccess,
   changePasswordFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
+  findAllUsersStart,
+  findAllUsersSuccess,
+  findAllUsersFailure,
 } from "./userSlice";
 import {
   uploadAudioFailure,
@@ -214,6 +220,32 @@ export const updateUser = async (
   }
 };
 
+export const appointAdmin = async (
+  accessToken,
+  userID,
+  data,
+  dispatch,
+  axiosJWT
+) => {
+  dispatch(updateUserStart());
+  try {
+    const result = await axiosJWT.post(
+      `${REACT_APP_BASE_URL}user/update`,
+      data,
+      {
+        headers: {
+          authorization: accessToken,
+          user: userID,
+        },
+      }
+    );
+    dispatch(updateUserSuccess());
+    return result;
+  } catch (error) {
+    dispatch(updateUserFailure());
+  }
+};
+
 export const changePassword = async (
   accessToken,
   userID,
@@ -248,6 +280,42 @@ export const findUser = async (userID, dispatch) => {
     return res.data;
   } catch (error) {
     dispatch(findUserFailure());
+  }
+};
+
+export const findAllUser = async (keySearch = "", dispatch) => {
+  dispatch(findAllUsersStart());
+  try {
+    const link = keySearch === "" ? "user" : `user?key=${keySearch}`;
+    const res = await axios.get(`${REACT_APP_BASE_URL}${link}`);
+    dispatch(findAllUsersSuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(findAllUsersFailure());
+  }
+};
+
+export const banUser = async (
+  accessToken,
+  userID,
+  deleteID,
+  dispatch,
+  axiosJWT
+) => {
+  dispatch(deleteUserStart());
+  try {
+    const res = await axiosJWT.delete(`${REACT_APP_BASE_URL}user/${deleteID}`, {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `${accessToken}`,
+        user: `${userID}`,
+      },
+    });
+    dispatch(deleteUserSuccess());
+    return res.data;
+  } catch (error) {
+    dispatch(deleteUserFailure());
+    return false;
   }
 };
 
@@ -335,6 +403,7 @@ export const getAllAnswers = async (keySearch, dispatch) => {
 
 export const createAnswer = async (
   accessToken,
+  userID,
   answer,
   dispatch,
   navigate,
@@ -349,11 +418,12 @@ export const createAnswer = async (
         headers: {
           "Content-Type": "application/json",
           authorization: `${accessToken}`,
+          user: `${userID}`,
         },
       }
     );
     dispatch(createAnswerSuccess(res.data));
-    navigate("/answers");
+    navigate("/management/test");
   } catch (error) {
     dispatch(createAnswerFailure());
   }
@@ -361,6 +431,7 @@ export const createAnswer = async (
 
 export const updateAnswer = async (
   accessToken,
+  userID,
   answer,
   dispatch,
   navigate,
@@ -375,29 +446,33 @@ export const updateAnswer = async (
         headers: {
           "Content-Type": "application/json",
           authorization: `${accessToken}`,
+          user: `${userID}`,
         },
       }
     );
     dispatch(updateAnswerSuccess(res.data));
-    navigate("/");
+    navigate("/management/test");
   } catch (error) {
     dispatch(updateAnswerFailure());
   }
 };
 
-export const deleteAnswer = async (accessToken, ID, dispatch, axiosJWT) => {
+export const deleteAnswer = async (
+  accessToken,
+  userID,
+  ID,
+  dispatch,
+  axiosJWT
+) => {
   dispatch(deleteAnswerStart());
   try {
-    await axiosJWT.delete(
-      `${REACT_APP_BASE_URL}answer/${ID}`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `${accessToken}`,
-        },
-      }
-    );
+    await axiosJWT.delete(`${REACT_APP_BASE_URL}answer/${ID}`, {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `${accessToken}`,
+        user: `${userID}`,
+      },
+    });
     dispatch(deleteAnswerSuccess());
   } catch (error) {
     dispatch(deleteAnswerFailure());
@@ -515,6 +590,7 @@ export const getAllDocuments = async (keySearch, dispatch) => {
 
 export const createDocument = async (
   accessToken,
+  userID,
   document,
   dispatch,
   navigate,
@@ -529,10 +605,12 @@ export const createDocument = async (
         headers: {
           "Content-Type": "application/json",
           authorization: `${accessToken}`,
+          user: `${userID}`,
         },
       }
     );
     dispatch(createDocumentSuccess(res.data));
+    navigate("/management/document");
   } catch (error) {
     dispatch(createDocumentFailure());
   }
@@ -540,6 +618,7 @@ export const createDocument = async (
 
 export const updateDocument = async (
   accessToken,
+  userID,
   document,
   dispatch,
   navigate,
@@ -554,29 +633,33 @@ export const updateDocument = async (
         headers: {
           "Content-Type": "application/json",
           authorization: `${accessToken}`,
+          user: `${userID}`,
         },
       }
     );
     dispatch(updateDocumentSuccess(res.data));
-    navigate("/");
+    navigate("/management/document");
   } catch (error) {
     dispatch(updateDocumentFailure());
   }
 };
 
-export const deleteDocument = async (accessToken, ID, dispatch, axiosJWT) => {
+export const deleteDocument = async (
+  accessToken,
+  userID,
+  ID,
+  dispatch,
+  axiosJWT
+) => {
   dispatch(deleteDocumentStart());
   try {
-    await axiosJWT.delete(
-      `${REACT_APP_BASE_URL}document/${ID}`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `${accessToken}`,
-        },
-      }
-    );
+    await axiosJWT.delete(`${REACT_APP_BASE_URL}document/${ID}`, {
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `${accessToken}`,
+        user: `${userID}`,
+      },
+    });
     dispatch(deleteDocumentSuccess());
   } catch (error) {
     dispatch(deleteDocumentFailure());
@@ -877,13 +960,20 @@ export const createComment = async (
 //   }
 // };
 
-export const deleteComment = async (accessToken, data, dispatch, axiosJWT) => {
+export const deleteComment = async (
+  accessToken,
+  userID,
+  data,
+  dispatch,
+  axiosJWT
+) => {
   dispatch(deleteCommentStart());
   try {
     await axiosJWT.delete(`${REACT_APP_BASE_URL}comment`, {
       headers: {
         "Content-Type": "application/json",
         authorization: `${accessToken}`,
+        user: `${userID}`,
       },
       data: data,
     });

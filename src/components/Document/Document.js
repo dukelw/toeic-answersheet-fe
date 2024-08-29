@@ -35,20 +35,19 @@ function Document() {
   return (
     <Container
       sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-      maxWidth="md"
     >
       <h1>TOEIC Document</h1>
       <TextField
         label="Search Document"
         variant="outlined"
         fullWidth
-        sx={{ mb: 3, maxWidth: isMobile ? 400 : 600 }}
+        sx={{ mb: 3, maxWidth: isMobile ? 400 : 800 }}
         onChange={handleSearchChange}
       />
       <List
         sx={{
           width: "100%",
-          maxWidth: isMobile ? 400 : 600,
+          maxWidth: isMobile ? 400 : 800,
           bgcolor: "background.paper",
         }}
       >

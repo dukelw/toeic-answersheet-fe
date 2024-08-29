@@ -8,7 +8,13 @@ import { getActiveSliders, getAllAnswers } from "../../redux/apiRequest";
 import { useDispatch } from "react-redux";
 import classNames from "classnames/bind";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Grid, Paper, Pagination } from "@mui/material";
+import {
+  Grid,
+  Paper,
+  Pagination,
+  createTheme,
+  useMediaQuery,
+} from "@mui/material";
 
 import styles from "./HomePage.module.scss";
 
@@ -49,9 +55,13 @@ function HomePage() {
     setPage(value);
   };
 
+  const theme = createTheme();
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
+
   return (
     <Container
       sx={{
+        width: isTablet ? "72%" : "100%",
         marginTop: "40px",
         paddingLeft: { xs: 1, sm: 2 },
         paddingRight: { xs: 1, sm: 2 },
@@ -72,7 +82,7 @@ function HomePage() {
           emulateTouch
           swipeable
         >
-          {slider.map((item, i) => (
+          {slider?.map((item, i) => (
             <Paper
               key={i}
               sx={{
@@ -107,7 +117,7 @@ function HomePage() {
 
       <Grid container spacing={2} sx={{ marginTop: "20px" }}>
         {currentItems.length > 0 ? (
-          currentItems.map((item) => (
+          currentItems?.map((item) => (
             <Grid item xs={12} sm={12} md={4} lg={2.4} key={item._id}>
               <Link to={`/answersheet/${item._id}`}>
                 <Button

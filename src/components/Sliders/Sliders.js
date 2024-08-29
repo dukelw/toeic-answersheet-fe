@@ -49,10 +49,16 @@ function Sliders() {
 
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
 
   return (
     <Container
-      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      sx={{
+        width: isTablet ? "72%" : "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
     >
       <h1>Sliders of Collection {collection}</h1>
       <TableContainer
@@ -137,7 +143,7 @@ function Sliders() {
         </Table>
       </TableContainer>
       <Pagination
-        count={Math.ceil(content.length / itemsPerPage)}
+        count={Math.ceil(content?.length / itemsPerPage)}
         page={page}
         onChange={handleChangePage}
         sx={{ mt: 2 }}

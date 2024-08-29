@@ -78,6 +78,7 @@ export default function StickyHeadTable() {
 
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
 
   const handleSearchChange = (e) => {
     setKeySearch(e.target.value);
@@ -92,13 +93,13 @@ export default function StickyHeadTable() {
         label="Search Test"
         variant="outlined"
         fullWidth
-        sx={{ mb: 3, maxWidth: isMobile ? 400 : "100%" }}
+        sx={{ mb: 3, maxWidth: isMobile ? 400 : isTablet ? "64%" : "100%" }}
         onChange={handleSearchChange}
       />
       {currentUser ? (
         <Paper
           sx={{
-            width: { xs: "30%", md: "100%" },
+            width: isMobile ? "30%" : isTablet ? "64%" : "100%",
             overflow: "hidden",
             marginLeft: { xs: "0 20px " },
           }}

@@ -85,12 +85,18 @@ const CreateSlider = () => {
 
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
 
   return (
     <Container
-      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      sx={{
+        width: isTablet ? "72%" : "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
     >
-      <h1>Create Slider</h1>
+      <h1>CREATE SLIDER</h1>
       <form
         style={{ width: isMobile ? "30%" : "100%" }}
         onSubmit={handleSubmit}

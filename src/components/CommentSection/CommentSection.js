@@ -44,6 +44,7 @@ const CommentSection = ({
   const [replyText, setReplyText] = useState("");
   const currentUser = useSelector((state) => state.user.signin.currentUser);
   const userID = currentUser?.metadata.user._id;
+  const isAdmin = currentUser?.metadata.user.isAdmin;
 
   const handleReplyClick = () => {
     setReplyVisible(!replyVisible);
@@ -105,7 +106,7 @@ const CommentSection = ({
         >
           Reply ({comment?.comment_replies?.length || 0})
         </Button>
-        {userID === comment.comment_user.user_id && (
+        {(userID === comment.comment_user.user_id || isAdmin) && (
           <IconButton onClick={() => onDeleteComment(comment._id)}>
             <DeleteIcon color="error" />
           </IconButton>
@@ -164,7 +165,7 @@ const CommentSection = ({
                         {timeFromNow(reply.createdAt)}
                       </Typography>
                     </Box>
-                    {userID === reply.comment_user.user_id && (
+                    {(userID === reply.comment_user.user_id || isAdmin) && (
                       <IconButton
                         onClick={() => onDeleteReply(reply._id)}
                         sx={{ ml: "auto" }}
@@ -277,7 +278,7 @@ function Comments({ answerID = "66c8c95eb4bc4dbeaa469f18" }) {
         answer_id: answerID,
         comment_id: commentID,
       };
-      await deleteComment(accessToken, data, dispatch, axiosJWT);
+      await deleteComment(accessToken, userID, data, dispatch, axiosJWT);
       socket.emit("delete_comment", data);
       setLoading(false); // Stop loading
     },
@@ -290,7 +291,7 @@ function Comments({ answerID = "66c8c95eb4bc4dbeaa469f18" }) {
       answer_id: answerID,
       comment_id: replyID,
     };
-    await deleteComment(accessToken, data, dispatch, axiosJWT);
+    await deleteComment(accessToken, userID, data, dispatch, axiosJWT);
     socket.emit("delete_comment", data);
     setLoading(false); // Stop loading
   };

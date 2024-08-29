@@ -22,6 +22,7 @@ const cx = classNames.bind(styles);
 
 function UpdateAnswer() {
   const [name, setName] = useState("");
+  const [oldName, setOldName] = useState("");
   const [answer, setAnswer] = useState("");
   const [file, setFile] = useState(null);
   const [audio, setAudio] = useState(null);
@@ -75,11 +76,18 @@ function UpdateAnswer() {
     }
 
     const data = {
-      name,
+      name: oldName,
       update: answerData,
     };
 
-    await updateAnswer(accessToken, data, dispatch, navigate, axiosJWT);
+    await updateAnswer(
+      accessToken,
+      currentUser.metadata.user._id,
+      data,
+      dispatch,
+      navigate,
+      axiosJWT
+    );
   };
 
   const getResults = async () => {
@@ -90,6 +98,7 @@ function UpdateAnswer() {
   useEffect(() => {
     const fetchData = async () => {
       const data = await getResults();
+      setOldName(data.name);
       setImage(data.image);
       setSound(data.audio);
       setAnswer(data.content);
@@ -101,10 +110,16 @@ function UpdateAnswer() {
 
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
 
   return (
     <Container
-      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      sx={{
+        width: isTablet ? "72%" : "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
     >
       <h1>UPDATE ANSWER</h1>
       <form

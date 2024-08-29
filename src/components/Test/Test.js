@@ -53,10 +53,12 @@ function Test() {
 
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
 
   return (
     <Container
       sx={{
+        width: isTablet ? "72%" : "100%",
         marginTop: "40px",
         paddingLeft: { xs: 1, sm: 2 },
         paddingRight: { xs: 1, sm: 2 },

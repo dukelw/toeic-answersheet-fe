@@ -57,10 +57,12 @@ function RankingDetail() {
 
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
 
   return (
     <Container
       sx={{
+        width: isTablet ? "72%" : "100%",
         mt: 4,
         display: "flex",
         flexDirection: "column",

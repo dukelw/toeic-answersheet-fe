@@ -314,7 +314,7 @@ function ToeicForm() {
   };
 
   const handleDelete = async () => {
-    await deleteAnswer(accessToken, id, dispatch, axiosJWT);
+    await deleteAnswer(accessToken, userID, id, dispatch, axiosJWT);
     navigate("/");
   };
 

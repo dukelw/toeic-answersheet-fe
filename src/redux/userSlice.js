@@ -22,7 +22,16 @@ const userSlide = createSlice({
       isFetching: false,
       error: false,
     },
+    findAll: {
+      foundUsers: null,
+      isFetching: false,
+      error: false,
+    },
     update: {
+      isFetching: false,
+      error: false,
+    },
+    delete: {
       isFetching: false,
       error: false,
     },
@@ -82,6 +91,18 @@ const userSlide = createSlice({
       state.find.isFetching = false;
       state.find.error = true;
     },
+    findAllUsersStart: (state) => {
+      state.findAll.isFetching = true;
+    },
+    findAllUsersSuccess: (state, action) => {
+      state.findAll.isFetching = false;
+      state.findAll.foundUsers = action.payload;
+      state.findAll.error = false;
+    },
+    findAllUsersFailure: (state) => {
+      state.findAll.isFetching = false;
+      state.findAll.error = true;
+    },
     updateUserStart: (state) => {
       state.update.isFetching = true;
     },
@@ -92,6 +113,17 @@ const userSlide = createSlice({
     updateUserFailure: (state) => {
       state.update.isFetching = false;
       state.update.error = true;
+    },
+    deleteUserStart: (state) => {
+      state.delete.isFetching = true;
+    },
+    deleteUserSuccess: (state) => {
+      state.delete.isFetching = false;
+      state.delete.error = false;
+    },
+    deleteUserFailure: (state) => {
+      state.delete.isFetching = false;
+      state.delete.error = true;
     },
     changePasswordStart: (state) => {
       state.password.isFetching = true;
@@ -121,9 +153,15 @@ export const {
   findUserStart,
   findUserSuccess,
   findUserFailure,
+  findAllUsersStart,
+  findAllUsersSuccess,
+  findAllUsersFailure,
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
   changePasswordStart,
   changePasswordSuccess,
   changePasswordFailure,

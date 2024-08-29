@@ -101,13 +101,13 @@ function Collections() {
         label="Search Collection"
         variant="outlined"
         fullWidth
-        sx={{ mb: 3, maxWidth: isMobile ? "80vw" : "80%" }}
+        sx={{ mb: 3, maxWidth: isMobile ? "80vw" : "100%" }}
         onChange={handleSearchChange}
       />
       <List
         sx={{
           width: "100%",
-          maxWidth: isMobile ? 400 : 600,
+          maxWidth: isMobile ? 400 : 1000,
           bgcolor: "background.paper",
         }}
       >
@@ -163,7 +163,7 @@ function Collections() {
         ))}
       </List>
       <Pagination
-        count={Math.ceil(contents.length / itemsPerPage)}
+        count={Math.ceil(contents?.length / itemsPerPage)}
         page={currentPage}
         onChange={handleChangePage}
         sx={{ mt: 2 }}

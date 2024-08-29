@@ -65,15 +65,28 @@ function CreateAnswer() {
       setIsAudioLoading(false);
     }
 
-    await createAnswer(accessToken, answerData, dispatch, navigate, axiosJWT);
+    await createAnswer(
+      accessToken,
+      currentUser?.metadata.user._id,
+      answerData,
+      dispatch,
+      navigate,
+      axiosJWT
+    );
   };
 
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
 
   return (
     <Container
-      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      sx={{
+        width: isTablet ? "72%" : "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
     >
       <h1>CREATE ANSWER</h1>
       <form
