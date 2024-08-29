@@ -32,7 +32,9 @@ const Ranking = () => {
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg"));
 
   return (
-    <Container sx={{ mt: 5, width: isTablet ? "72%" : "100%" }}>
+    <Container
+      sx={{ mt: 5, width: isMobile ? "82vw" : isTablet ? "72%" : "100%" }}
+    >
       <Typography
         variant="h5"
         align="center"
