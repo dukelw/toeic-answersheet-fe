@@ -58,7 +58,7 @@ function Test() {
   return (
     <Container
       sx={{
-        width: isTablet ? "72%" : "100%",
+        width: isMobile ? "82vw" : isTablet ? "72%" : "100%",
         marginTop: "40px",
         paddingLeft: { xs: 1, sm: 2 },
         paddingRight: { xs: 1, sm: 2 },

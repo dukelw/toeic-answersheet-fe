@@ -388,7 +388,6 @@ export const getAnswer = async (ID, dispatch) => {
 export const getAllAnswers = async (keySearch, dispatch) => {
   dispatch(getAllAnswersStart());
   try {
-    console.log(REACT_APP_BASE_URL);
     const link = keySearch !== "" ? `answer?key=${keySearch}` : "answer";
     const res = await axios.get(`${REACT_APP_BASE_URL}${link}`, {
       headers: {
@@ -504,6 +503,24 @@ export const getHistoryOfUser = async (userID, dispatch) => {
   try {
     const res = await axios.get(
       `${REACT_APP_BASE_URL}history/get-of-user/${userID}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    dispatch(getHistorySuccess(res.data));
+    return res.data;
+  } catch (error) {
+    dispatch(getHistoryFailure());
+  }
+};
+
+export const getHistory = async (userID, answerID, dispatch) => {
+  dispatch(getHistoryStart());
+  try {
+    const res = await axios.get(
+      `${REACT_APP_BASE_URL}history/find?userID=${userID}&answerID=${answerID}`,
       {
         headers: {
           "Content-Type": "application/json",

@@ -38,7 +38,6 @@ function RankingDetail() {
         const updatedRankings = await Promise.all(
           rankingList.map(async (ranking) => {
             const userInfo = await findUser(ranking.userID, dispatch);
-            console.log(ranking);
             return {
               ...ranking,
               userName: userInfo.metadata.user.name,

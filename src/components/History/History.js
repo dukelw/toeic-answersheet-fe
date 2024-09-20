@@ -7,7 +7,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import FolderIcon from "@mui/icons-material/Folder";
+import ReviewsIcon from "@mui/icons-material/Reviews";
 import { getAnswer, getHistoryOfUser } from "../../redux/apiRequest";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -16,9 +16,10 @@ import {
   TextField,
   useMediaQuery,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const columns = [
-  { id: "icon", label: "Icon", minWidth: 50, align: "center" },
+  { id: "icon", label: "Review", minWidth: 50, align: "center" },
   { id: "id", label: "ID", minWidth: 50, align: "center" },
   { id: "name", label: "Name", minWidth: 170 },
   { id: "score", label: "Score", minWidth: 100, align: "center" },
@@ -42,7 +43,14 @@ export default function StickyHeadTable() {
           histories.map(async (history, index) => {
             const answer = await getAnswer(history.history_answer_id, dispatch);
             return {
-              icon: <FolderIcon />,
+              icon: (
+                <Link
+                  style={{ color: "#1976d2" }}
+                  to={`/review/${history._id}/${history.history_answer_id}`}
+                >
+                  <ReviewsIcon />
+                </Link>
+              ),
               id: index + 1,
               name: answer.name,
               score: history.history_score,

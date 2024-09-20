@@ -103,7 +103,6 @@ function UpdateAnswer() {
       setSound(data.audio);
       setAnswer(data.content);
       setName(data.name);
-      console.log(data.audio);
     };
     fetchData();
   }, [id]);
