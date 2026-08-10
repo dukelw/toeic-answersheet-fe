@@ -22,7 +22,9 @@ import { createAxios } from "../../../createAxios";
 import { findUser, getNotifications, logout } from "../../../redux/apiRequest";
 import { ClickAwayListener, Paper, Popper } from "@mui/material";
 
-const socket = io.connect("https://toeic-answersheet-be.onrender.com");
+const socket = io.connect(
+  process.env.REACT_APP_SOCKET_URL || "https://toeic-answersheet.dukelewis.com"
+);
 
 function Header() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
